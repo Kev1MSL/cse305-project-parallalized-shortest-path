@@ -1,2 +1,2 @@
-# cse305-project
-Parallelized shortest path
+# CSE 305 - Ecole Polytechnique
+Parallelized shortest path in C++
