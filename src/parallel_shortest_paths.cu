@@ -1,11 +1,4 @@
-#include <iostream>
-#include <string>
-#include <vector>
-#include <algorithm>
-#include <cmath>
-#include <map>
-#include "graph.cpp"
-
+#include graph.h
 
 using namespace std;
 
@@ -39,33 +32,22 @@ void vertex_out_degree(Graph graph){
             graph.degree[tid]++;
         }
     }
-}
-void degrees_parallel(Graph graph){
-    const size_t THREADS_PER_BLOCK = 256;
-    cudaMallocManaged(&graph.degree, vertices * sizeof(int));
-    for (int i = 0; i < vertices; i++)
-    {
-        graph.degree[i] = 0;
-    }
-    const size_t block_size = (vertices + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK;
-    vertex_out_degree<<<block_size, THREADS_PER_BLOCK>>>(graph);
-    cudaDeviceSynchronize();
-    vector<int> degrees;
-    for (int i = 0; i < vertices; i++)
-    {
-        degrees.push_back(graph.degree[i]);
-    }
-    //write to graph degrees
-    graph.setDegrees(degrees);
+
 }
 
-int max_degree_parallel(Graph graph){
-    graph.degrees_parallel();
+// 
+//TODO: test max degree parallel
+int max_degree(Graph graph){
+    // assuming that degrees are already found.
+
     int *max_degree = max_element(graph.degree, graph.degree + graph.getN());
     return *max_degree;
 }
 
+/**
+ * @brief SSSP using delta stepping algorithm
+ * @param graph a graph object with N vertices and M edges
+ */
 void delta_step_SSSP(Graph graph){
-    int max_degree = max_degree_parallel(graph);
-    
+    int max_degree = max_degree(graph); //maxdegree to find optimal delta
 }

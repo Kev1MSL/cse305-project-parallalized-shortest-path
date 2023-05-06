@@ -4,6 +4,7 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <random>
 
 /**
  * Class representing an edge in the graph.
@@ -66,6 +67,18 @@ public:
     Graph(int _nbVertices, int _nbEdges);
 
     /**
+     * Constructor for a graph loaded from a file.
+     * @param _nbVertices Number of vertices in the graph.
+     * @param _nbEdges Number of edges in the graph.
+     * @param _edges Edges in the graph as a vector of Edge objects.
+     * @param _vertices Vertices in the graph as a vector of integers.
+     */
+    Graph(int _nbVertices, int _nbEdges, std::vector<Edge> _edges, std::vector<int> _vertices):
+    nb_vertices(_nbVertices), nb_edges(_nbEdges), edges(_edges), vertices(_vertices) {
+        computeDegrees();
+    };
+
+    /**
      * Get the number of vertices in the graph.
      * @return Number of vertices in the graph.
      */
@@ -109,6 +122,25 @@ public:
      */
     void setVertices(std::vector<int> _vertices);
 
+    /**
+     * Print the graph.
+     */
+    void printGraph();
+
+    /**
+     * Save the graph to a file.
+     * @param fp File pointer to save the graph to.
+     * @param edgeIndex Index of the edge.
+     */
+    void saveGraph(FILE *fp, int edgeIndex);
+
+    /**
+     * Compute the degrees of the vertices in the graph.
+     */
+    void computeDegrees();
+
+
+
 
 private:
     // Number of vertices
@@ -122,6 +154,8 @@ private:
 
     // Vertices
     std::vector<int> vertices;
+
+    std::vector<int> degrees;
 };
 
 

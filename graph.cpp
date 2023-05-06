@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-
+#include <random>
 #define INF 0x3f3f3f3f
 
 // struct representing an edge in the graph
@@ -35,11 +35,14 @@ class Graph {
         Graph() {}
         Graph(int _n, int _m) : n(_n), m(_m) {
             edges.reserve(m);
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            std::uniform_real_distribution<double> dist(0.0, 1.0);
             //generate graph randomly
             for (int i = 0; i < m; i++) {
                 int u = rand() % n;
                 int v = rand() % n;
-                int w = rand() % 1000;
+                double w = dist(gen);
                 addEdge(u, v, w);
             }
             void getDegrees();
@@ -93,14 +96,13 @@ class Graph {
                 addEdge(u, v, w);
             }
         }
-        void getDegrees() {
+        void computeDegrees() {
             degrees.resize(n);
             for (int i = 0; i < n; i++) {
                 degrees[i] = 0;
             }
             for (int i = 0; i < m; i++) {
                 degrees[edges[i].getFrom()]++;
-                degrees[edges[i].getTo()]++;
             }
         }
         void setDegrees(std::vector<int> _degrees) {
