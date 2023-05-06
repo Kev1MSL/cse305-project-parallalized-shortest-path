@@ -30,10 +30,13 @@ class Edge {
 };
 class Graph {
     private: 
+        // n = number of vertices
+        // m = number of edges
         int n, m;
         std::vector<Edge> edges;
+        std::vector<int> vertices;
     public:
-        
+        Graph() {}
         Graph(int _n, int _m) : n(_n), m(_m) {
             edges.reserve(m);
             //generate graph randomly
@@ -47,11 +50,23 @@ class Graph {
         void setEdges(std::vector<Edge> _edges) {
             edges = _edges;
         }
+        void setVertices(int _vertices) {
+            //arange from 0 to n-1 vertices
+            for (int i = 0; i < _vertices; i++) {
+                vertices.push_back(i);
+            }
+        }
         std::vector<Edge> getEdges() {
             return edges;
         }
         void addEdge(int u, int v, int w) {
             edges.emplace_back(u, v, w);
+        }
+        void setN(int _n) {
+            n = _n;
+        }
+        void setM(int _m) {
+            m = _m;
         }
         int getN() {
             return n;
@@ -82,3 +97,32 @@ class Graph {
 };
 
 
+std::vector<Graph> loadGraphs(std::string filename) {
+    std::vector<Graph> graphs;
+    FILE *fp = fopen(filename.c_str(), "r");
+    // read from : 
+    // Graph 0, Vertices 100, Edges 1000
+    // 68 18 3
+    // 1 81 266
+    // 74 19 204
+    while (!feof(fp)) {
+        int graphId, n, m;
+        fscanf(fp, "Graph %d, Vertices %d, Edges %d\n", &graphId, &n, &m);
+        graphs.emplace_back();
+        std::vector<Edge> edges;
+        for (int i = 0; i < m; i++) {
+            int u, v, w;
+            fscanf(fp, "%d %d %d\n", &u, &v, &w);
+            edges.emplace_back(u, v, w);
+        }
+
+        graphs[graphId].setVertices(n);
+        graphs[graphId].setEdges(edges);
+        graphs[graphId].setN(n);
+        graphs[graphId].setM(m);
+    }
+
+        
+    fclose(fp);
+    return graphs;
+}

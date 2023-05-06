@@ -27,25 +27,13 @@ void generateSaveGraphs(int n, int m, int numGraphs, std::string filename) {
     fclose(fp);
 }
 
-std::vector<Graph> loadGraphs(std::string filename) {
-    std::vector<Graph> graphs;
-    FILE *fp = fopen(filename.c_str(), "r");
-    int n, m;
-    while (fscanf(fp, "%d %d", &n, &m) != EOF) {
-        graphs.emplace_back(n, m);
-        graphs.back().load(fp);
-    }
-    fclose(fp);
-    return graphs;
-}
-
-
 int main() {
     srand(time(NULL));
     generateSaveGraphs(100, 1000, 100, "test_100v_1000e_100g.txt");
-    // std::vector<Graph> graphs = loadGraphs("test_100v_1000e_100g.txt");
-    // for (int i = 0; i < graphs.size(); i++) {
-    //     graphs[i].printGraph();
-    // }
+    std::vector<Graph> graphs = loadGraphs("test_100v_1000e_100g.txt");
+    for (int i = 0; i < 100; i++) {
+        printf("Graph %d:\n", i);
+        graphs[i].printGraph();
+    }
     return 0;
 }

@@ -4,17 +4,25 @@
 CXX = g++
 CFLAGS = -pthread -std=c++11 -Wall
 
-SOURCES = graph_gen.cpp graph.cpp
-OBJECTS = graph_gen.o graph.o 
+SOURCES_GEN = graph_gen.cpp graph.cpp
+OBJECTS_GEN = graph_gen.o graph.o 
+OBJECTS_SEQ = seq_shortest_path.o graph.o
 
-graph_gen: $(OBJECTS)
-	$(CXX) $(CFLAGS) -o graph_gen $(OBJECTS) 
+seq_shortest_path: $(OBJECTS_SEQ)
+	$(CXX) $(CFLAGS) -o seq_shortest_path $(OBJECTS_SEQ)
+
+seq_shortest_path.o: seq_shortest_path.cpp
+	$(CXX) -c $(CFLAGS) -o seq_shortest_path.o seq_shortest_path.cpp
+
+graph_gen: $(OBJECTS_GEN)
+	$(CXX) $(CFLAGS) -o graph_gen $(OBJECTS_GEN) 
 
 graph_gen.o: graph_gen.cpp
 	$(CXX) -c $(CFLAGS) -o graph_gen.o graph_gen.cpp
 
 graph.o: graph.cpp
 	$(CXX) -c $(CFLAGS) -o graph.o graph.cpp
+
 
 # grading.o: grading/grading.cpp gradinglib/gradinglib.hpp td6.cpp
 # 	$(CXX) -c $(CFLAGS) -o grading.o grading/grading.cpp -I.
