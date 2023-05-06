@@ -26,6 +26,7 @@ class Edge {
         int getWeight() {
             return w;
         }
+    
 };
 class Graph {
     private: 
@@ -58,11 +59,26 @@ class Graph {
         int getM() {
             return m;
         }
-};
+        void printGraph() {
+            for (int i = 0; i < m; i++) {
+                std::cout << edges[i].getFrom() << " " << edges[i].getTo() << " " << edges[i].getWeight() << std::endl;
+            }
+        }
+        void save(FILE *fp, int i) {
 
-// comparator function for sorting edges by weight
-bool cmp(Edge e1, Edge e2) {
-    return e1.w < e2.w;
-}
+            fprintf(fp, "Graph %d, Vertices %d, Edges %d\n", i, n, m);
+            for (int i = 0; i < m; i++) {
+                fprintf(fp, "%d %d %d\n", edges[i].getFrom(), edges[i].getTo(), edges[i].getWeight());
+            }
+        }
+        void load(FILE *fp) {
+            fscanf(fp, "%d %d", &n, &m);
+            for (int i = 0; i < m; i++) {
+                int u, v, w;
+                fscanf(fp, "%d %d %d", &u, &v, &w);
+                addEdge(u, v, w);
+            }
+        }
+};
 
 
