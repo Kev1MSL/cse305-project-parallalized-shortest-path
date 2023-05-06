@@ -62,3 +62,9 @@ std::vector <Graph> GraphGenerator::loadGraphs(std::string filename) {
         graphs[graphId] = Graph(nbVertices, nbEdges, edges, vertices);
     }
 }
+
+int main() {
+    srand(time(NULL));
+    GraphGenerator::generateSaveGraphs(100, 1000, 100, "graphs.txt");
+    return 0;
+}

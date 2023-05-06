@@ -73,14 +73,14 @@ void Graph::setVertices(int _vertices) {
 }
 
 void Graph::printGraph() {
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < nbEdges; i++) {
         std::cout << edges[i].getFrom() << " " << edges[i].getTo() << " " << edges[i].getWeight() << std::endl;
     }
 }
 
 void Graph::saveGraph(FILE *fp, int edgeIndex) {
-    fprintf(fp, "Graph %d, Vertices %d, Edges %d\n", edgeIndex, n, m);
-    for (int i = 0; i < m; i++) {
+    fprintf(fp, "Graph %d, Vertices %d, Edges %d\n", edgeIndex, nbVertices, nbEdges);
+    for (int i = 0; i < nbEdges; i++) {
         fprintf(fp, "%d %d %d\n", edges[i].getFrom(), edges[i].getTo(), edges[i].getWeight());
     }
 }

@@ -5,11 +5,22 @@
 #include <limits>
 #include <cmath>
 #include <random>
+#include <iostream>
 
 /**
  * Class representing an edge in the graph.
  */
 class Edge {
+private:
+
+    // Source vertex
+    int fromVertex;
+
+    // Destination vertex
+    int toVertex;
+
+    // Weight of the edge
+    int edgeWeight;
 public:
     /**
      * Constructor for an edge.
@@ -37,22 +48,27 @@ public:
      */
     int getWeight();
 
-private:
 
-    // Source vertex
-    int fromVertex;
-
-    // Destination vertex
-    int toVertex;
-
-    // Weight of the edge
-    int edgeWeight;
 };
 
 /**
  * Class representing a graph.
  */
 class Graph {
+private:
+    // Number of vertices
+    int nbVertices;
+
+    // Number of edges
+    int nbEdges;
+
+    // Edges
+    std::vector<Edge> edges;
+
+    // Vertices
+    std::vector<int> vertices;
+
+    std::vector<int> degrees;
 public:
     /**
      * Empty constructor for a graph, used for loading graphs from file.
@@ -74,7 +90,7 @@ public:
      * @param _vertices Vertices in the graph as a vector of integers.
      */
     Graph(int _nbVertices, int _nbEdges, std::vector<Edge> _edges, std::vector<int> _vertices):
-    nb_vertices(_nbVertices), nb_edges(_nbEdges), edges(_edges), vertices(_vertices) {
+    nbVertices(_nbVertices), nbEdges(_nbEdges), edges(_edges), vertices(_vertices) {
         computeDegrees();
     };
 
@@ -120,8 +136,7 @@ public:
      * Set the vertices in the graph, used for loading graphs from file.
      * @param _vertices Vertices in the graph as a vector of integers.
      */
-    void setVertices(std::vector<int> _vertices);
-
+    void setVertices(int _vertices);
     /**
      * Print the graph.
      */
@@ -142,20 +157,7 @@ public:
 
 
 
-private:
-    // Number of vertices
-    int nb_vertices;
 
-    // Number of edges
-    int nb_edges;
-
-    // Edges
-    std::vector<Edge> edges;
-
-    // Vertices
-    std::vector<int> vertices;
-
-    std::vector<int> degrees;
 };
 
 
