@@ -35,6 +35,7 @@ class Graph {
         int n, m;
         std::vector<Edge> edges;
         std::vector<int> vertices;
+        std::vector<int> degrees;
     public:
         Graph() {}
         Graph(int _n, int _m) : n(_n), m(_m) {
@@ -46,6 +47,10 @@ class Graph {
                 int w = rand() % 1000;
                 addEdge(u, v, w);
             }
+            void getDegrees();
+            void setN(int _n);
+            void setM(int _m);
+            void setVertices(int _vertices);
         }
         void setEdges(std::vector<Edge> _edges) {
             edges = _edges;
@@ -80,7 +85,6 @@ class Graph {
             }
         }
         void save(FILE *fp, int i) {
-
             fprintf(fp, "Graph %d, Vertices %d, Edges %d\n", i, n, m);
             for (int i = 0; i < m; i++) {
                 fprintf(fp, "%d %d %d\n", edges[i].getFrom(), edges[i].getTo(), edges[i].getWeight());
@@ -94,6 +98,20 @@ class Graph {
                 addEdge(u, v, w);
             }
         }
+        void getDegrees() {
+            degrees.resize(n);
+            for (int i = 0; i < n; i++) {
+                degrees[i] = 0;
+            }
+            for (int i = 0; i < m; i++) {
+                degrees[edges[i].getFrom()]++;
+                degrees[edges[i].getTo()]++;
+            }
+        }
+        void setDegrees(std::vector<int> _degrees) {
+            degrees = _degrees;
+        }
+        
 };
 
 
