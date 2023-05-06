@@ -1,13 +1,5 @@
 //generate graph objects from graph.cpp
 #include "graph.cpp"
-#include <iostream>
-#include <cstdio>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <algorithm>
-#include <vector>
-#include <ctime>
 
 std::vector<Graph> generateGraphs(int n, int m, int numGraphs) {
     std::vector<Graph> graphs;

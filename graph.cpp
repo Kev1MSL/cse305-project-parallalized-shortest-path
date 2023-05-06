@@ -1,11 +1,6 @@
 #include <iostream>
-#include <cstdio>
 #include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <algorithm>
 #include <vector>
-#include <ctime>
 
 #define INF 0x3f3f3f3f
 
