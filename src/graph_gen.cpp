@@ -65,12 +65,25 @@ std::vector <Graph> GraphGenerator::loadGraphs(std::string filename) {
     return graphs;
 }
 
-int main() {
+/**
+ * Generate a graph with n vertices and m edges, and save it to a file.
+ * argv[1] = number of vertices
+ * argv[2] = number of edges
+ * argv[3] = number of graphs
+ * argv[4] = filename
+*/
+int main(int argc, char* argv[]) {
     srand(time(NULL));
-    std::vector<Graph> graphs = GraphGenerator::generateSaveGraphs(100, 1000, 100, "graphs.txt");
-    // //print
-    // for (size_t i = 0; i < graphs.size(); i++) {
-    //     graphs[i].printGraph();
-    // }
+    // Generate and save graphs
+    if (argc != 5) {
+        fprintf(stderr, "[Error] Usage: ./graph_gen <number of vertices> <number of edges> <number of graphs> <filename>\n");
+        return -1;
+    }
+    int n = atoi(argv[1]);
+    int m = atoi(argv[2]);
+    int numGraphs = atoi(argv[3]);
+    std::string filename = argv[4];
+    GraphGenerator::generateSaveGraphs(5, 9, 1, "graph.txt");
     return 0;
+
 }

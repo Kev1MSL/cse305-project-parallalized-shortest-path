@@ -84,8 +84,9 @@ private:
     // Edges
     std::vector<Edge> edges;
 
-    // Adjancy list:
-    std::vector<std::vector<std::pair<int, double>>> adjList;
+    // Adjancy list
+    // std::vector<std::vector<std::pair<int, double>>> adjList;
+    std::vector<std::vector<double>> adjList;
 
     // Vertices
     std::vector<int> vertices;
@@ -181,14 +182,15 @@ public:
 
 
     /**
-     * Are neighbors:
+     * Checks wether two vertices are neighbors.
      * @param v1 vertex 1
      * @param v2 vertex 2
+     * @return true if v1 and v2 are neighbors, false otherwise.
     */
     bool areNeighbors(int v1, int v2);
 
     /**
-     * create adjacency list for dijkstra
+     * Compute the adjacency list of the graph, used for djikstra's algorithm.
     */
     void createAdjList();
 };

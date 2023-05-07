@@ -105,28 +105,18 @@ void Graph::computeDegrees() {
 }
 
 
-
-
-//create adjacency list
 void Graph::createAdjList(){
     //create adjacency list
     //iterate through edges
+    adjList = std::vector<std::vector<double>>(nbVertices, std::vector<double>(nbVertices, 0));
     for(int i = 0; i < edges.size(); i++){
-        //add edge to adjacency list
-        std::pair<int,double> p = std::make_pair(edges[i].getTo(), edges[i].getWeight());
-        printf("pair: %d %f\n", p.first, p.second);
-        adjList[edges[i].getFrom()].push_back(p);
+        // adjList[edges[i].getFrom()].push_back(p);
+        adjList[edges[i].getFrom()][edges[i].getTo()] = edges[i].getWeight();
+
     }
 }
     
 bool Graph::areNeighbors(int v1, int v2){
-    //iterate through adjacency list of v1
-    for(int i = 0; i < adjList[v1].size(); i++){
-        //if v2 is in adjacency list of v1
-        if(adjList[v1][i].first == v2){
-            return true;
-        }
-    }
-    return false;
+    return adjList[v1][v2] != 0;
 }
 
