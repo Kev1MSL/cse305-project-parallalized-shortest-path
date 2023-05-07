@@ -44,15 +44,16 @@ std::vector <Graph> GraphGenerator::loadGraphs(std::string filename) {
     // Open the file to load the graphs from
     FILE *fp = fopen(filename.c_str(), "r");
 
-    while (feof(fp) == 0) {
-        int graphId, nbVertices, nbEdges;
-        fscanf(fp, "Graph %d, Vertices %d, Edges %d\n", &graphId, &nbEdges, &nbVertices);
+    // Read the graphs from the file
+    int graphId, nbVertices, nbEdges;
+    while (fscanf(fp, "Graph %d, Vertices %d, Edges %d\n", &graphId, &nbVertices, &nbEdges) != EOF) {
         graphs.emplace_back();
         std::vector<Edge> edges;
         edges.reserve(nbEdges);
         for (int i = 0; i < nbEdges; i++) {
-            int fromVertex, toVertex, edgeWeight;
-            fscanf(fp, "%d %d %d\n", &fromVertex, &toVertex, &edgeWeight);
+            int fromVertex, toVertex;
+            double edgeWeight;
+            fscanf(fp, "%d %d %lf\n", &fromVertex, &toVertex, &edgeWeight);
             edges.emplace_back(fromVertex, toVertex, edgeWeight);
         }
         std::vector<int> vertices;
@@ -63,27 +64,4 @@ std::vector <Graph> GraphGenerator::loadGraphs(std::string filename) {
         graphs[graphId] = Graph(nbVertices, nbEdges, edges, vertices);
     }
     return graphs;
-}
-
-/**
- * Generate a graph with n vertices and m edges, and save it to a file.
- * argv[1] = number of vertices
- * argv[2] = number of edges
- * argv[3] = number of graphs
- * argv[4] = filename
-*/
-int main(int argc, char* argv[]) {
-    srand(time(NULL));
-    // Generate and save graphs
-    if (argc != 5) {
-        fprintf(stderr, "[Error] Usage: ./graph_gen <number of vertices> <number of edges> <number of graphs> <filename>\n");
-        return -1;
-    }
-    int n = atoi(argv[1]);
-    int m = atoi(argv[2]);
-    int numGraphs = atoi(argv[3]);
-    std::string filename = argv[4];
-    GraphGenerator::generateSaveGraphs(5, 9, 1, "graph.txt");
-    return 0;
-
 }
