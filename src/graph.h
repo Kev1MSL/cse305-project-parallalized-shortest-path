@@ -84,9 +84,8 @@ private:
     // Edges
     std::vector<Edge> edges;
 
-    // Adjancy list
-    // std::vector<std::vector<std::pair<int, double>>> adjList;
-    std::vector<std::vector<double>> adjList;
+    // Adjancy matrix
+    std::vector<std::vector<double> > adjMatrix;
 
     // Vertices
     std::vector<int> vertices;
@@ -183,16 +182,24 @@ public:
 
     /**
      * Checks wether two vertices are neighbors.
-     * @param v1 vertex 1
-     * @param v2 vertex 2
+     * @param v1 Vertex 1
+     * @param v2 Vertex 2
      * @return true if v1 and v2 are neighbors, false otherwise.
     */
-    bool areNeighbors(int v1, int v2);
+    bool areNeighbors(int from, int to);
 
     /**
      * Compute the adjacency list of the graph, used for djikstra's algorithm.
     */
     void createAdjList();
+
+    /**
+     * Get the weight of an edge.
+     * @param v1 Vertex 1.
+     * @param v2 Vertex 2.
+     * @return Weight of the edge.
+    */
+    double getEdgeWeight(int from, int to);
 };
 
 

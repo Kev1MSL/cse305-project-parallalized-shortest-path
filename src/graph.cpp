@@ -108,15 +108,19 @@ void Graph::computeDegrees() {
 void Graph::createAdjList(){
     //create adjacency list
     //iterate through edges
-    adjList = std::vector<std::vector<double>>(nbVertices, std::vector<double>(nbVertices, 0));
+    adjMatrix = std::vector<std::vector<double> >(nbVertices, std::vector<double>(nbVertices, 0));
     for(int i = 0; i < edges.size(); i++){
-        // adjList[edges[i].getFrom()].push_back(p);
-        adjList[edges[i].getFrom()][edges[i].getTo()] = edges[i].getWeight();
+        adjMatrix[edges[i].getFrom()][edges[i].getTo()] = edges[i].getWeight();
 
     }
 }
+
+double Graph::getEdgeWeight(int v1, int v2){
+    return adjMatrix[v1][v2];
+}
     
 bool Graph::areNeighbors(int v1, int v2){
-    return adjList[v1][v2] != 0;
+    return Graph::getEdgeWeight(v1, v2) != 0;
 }
+
 

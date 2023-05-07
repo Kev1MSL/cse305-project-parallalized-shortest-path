@@ -19,7 +19,7 @@ void dijkstra(Graph graph, int source, int destination) {
     std::vector<double> distance(graph.getGraphNbVertices(), INF);
     distance[source] = 0;
     // Initialize the fibonacci heap:
-    boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<std::greater<std::pair<int, int>>>> heap;
+    boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<std::greater<std::pair<int, int> > > > heap;
     
     // Initialize the heap:
     heap.push(std::make_pair(0, source));
@@ -59,7 +59,7 @@ void dijkstra(Graph graph, int source, int destination) {
             // find in edgeset the edge with fromVertex = vertex and toVertex = i
             
             
-            double weight = graph.
+            double weight = graph.getEdgeWeight(vertex, i);
 
             // If the distance to the neighbor is greater than the distance to the current vertex plus the weight of the edge, update the distance:
             if (distance[i] > distance[vertex] + weight) {
@@ -73,13 +73,30 @@ void dijkstra(Graph graph, int source, int destination) {
     std::cout << "Distance from " << source << " to " << destination << ": " << distance[destination] << std::endl;
 }
 
-int main(){
-    //generate one graph
-    Graph g = GraphGenerator::generateGraph(3, 3);
-    //perform dijkstra's algorithm
-    //print graph
-    g.printGraph();
-    dijkstra(g, 0, 4);
+/**
+ * Test the algorithm.
+ * argv[1]: path to the graph file
+ * argv[2]: source vertex
+ * argv[3]: destination vertex
+*/
+int main(int argc, char* argv[]) {
+
+    if (argc != 4) {
+        fprintf(stderr, "Usage: ./seq_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex>\n");
+        return -1;
+    }
+
+    // Get the arguments
+    std::string path = argv[1];
+    int sourceVertex = atoi(argv[2]);
+    int destinationVertex = atoi(argv[3]);
+
+    // Load the graph from the file
+    Graph graph = GraphGenerator::loadGraphs(path)[0];
+    graph.printGraph();
+
+    // Run the algorithm:
+    dijkstra(graph, sourceVertex, destinationVertex);
 
     return 0;
 }
