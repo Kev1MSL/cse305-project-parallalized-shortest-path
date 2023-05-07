@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
     // Load the graph from the file
     Graph graph = GraphGenerator::loadGraphs(path)[0];
     graph.printGraph();
-
+    graph.printAdjMatrix();
     // Run the algorithm:
     dijkstra(graph, sourceVertex, destinationVertex);
 

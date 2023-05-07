@@ -30,11 +30,16 @@ Graph::Graph(int _nbVertices, int _nbEdges) {
     for (int i = 0; i < nbVertices; i++) {
         for (int j = i + 1; j < nbVertices; j++) {
             allEdges.insert(std::make_pair(i, j));
+            allEdges.insert(std::make_pair(j, i));
         }
     }
     // Generate graph randomly
     for (int i = 0; i < nbEdges; i++) {
         // Pick a random edge
+        if (allEdges.empty()) {
+            nbEdges = i;
+            break;
+        }
         int edgeIndex = rand() % allEdges.size();
         auto it = allEdges.begin();
         std::advance(it, edgeIndex);
@@ -47,6 +52,7 @@ Graph::Graph(int _nbVertices, int _nbEdges) {
 
         // Add the edge to the graph
         addEdge(fromVertex, toVertex, edgeWeight);
+        // if no more edges to pick, set new nbEdges and break
     }
 
     computeDegrees();
@@ -85,6 +91,7 @@ void Graph::setVertices(int _vertices) {
 }
 
 void Graph::printGraph() {
+    std::cout << "Graph " << nbVertices << ", Vertices " << nbVertices << ", Edges " << nbEdges << std::endl;
     for (int i = 0; i < nbEdges; i++) {
         std::cout << edges[i].getFrom() << " " << edges[i].getTo() << " " << edges[i].getWeight() << std::endl;
     }
@@ -108,7 +115,8 @@ void Graph::computeDegrees() {
 void Graph::createAdjList(){
     //create adjacency list
     //iterate through edges
-    adjMatrix = std::vector<std::vector<double> >(nbVertices, std::vector<double>(nbVertices, 0));
+    adjMatrix = std::vector<std::vector<double>>(nbVertices, std::vector<double>(nbVertices, 0));
+
     for(int i = 0; i < edges.size(); i++){
         adjMatrix[edges[i].getFrom()][edges[i].getTo()] = edges[i].getWeight();
 
@@ -123,4 +131,13 @@ bool Graph::areNeighbors(int v1, int v2){
     return Graph::getEdgeWeight(v1, v2) != 0;
 }
 
+void Graph::printAdjMatrix(){
+    printf("Adjacency Matrix:\n");
+    for(int i = 0; i < adjMatrix.size(); i++){
+        for(int j = 0; j < adjMatrix[i].size(); j++){
+            std::cout << adjMatrix[i][j] << " ";
+        }
+        std::cout << std::endl;
+    }
+}
 

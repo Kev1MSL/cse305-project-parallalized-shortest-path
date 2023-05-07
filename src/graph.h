@@ -85,7 +85,8 @@ private:
     std::vector<Edge> edges;
 
     // Adjancy matrix
-    std::vector<std::vector<double> > adjMatrix;
+    std::vector<std::vector<double>> adjMatrix;
+
 
     // Vertices
     std::vector<int> vertices;
@@ -200,7 +201,13 @@ public:
      * @return Weight of the edge.
     */
     double getEdgeWeight(int from, int to);
+
+    /**
+     * Print adjacency matrix
+    */
+    void printAdjMatrix();
 };
+
 
 
 #endif //CSE305_PROJECT_GRAPH_H

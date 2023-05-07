@@ -65,3 +65,8 @@ std::vector <Graph> GraphGenerator::loadGraphs(std::string filename) {
     }
     return graphs;
 }
+
+int main() {
+    GraphGenerator::generateSaveGraph(6, 20, "test.txt");
+    return 0;
+}
