@@ -9,7 +9,7 @@ int Edge::getTo() {
     return toVertex;
 }
 
-int Edge::getWeight() {
+double Edge::getWeight() {
     return edgeWeight;
 }
 
@@ -25,20 +25,32 @@ Graph::Graph(int _nbVertices, int _nbEdges) {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<double> dist(0.0, 1.0);
 
+    // create a set of all possible edges:
+    std::set<std::pair<int, int>> allEdges;
+    for (int i = 0; i < nbVertices; i++) {
+        for (int j = i + 1; j < nbVertices; j++) {
+            allEdges.insert(std::make_pair(i, j));
+        }
+    }
     // Generate graph randomly
     for (int i = 0; i < nbEdges; i++) {
+        // Pick a random edge
+        int edgeIndex = rand() % allEdges.size();
+        auto it = allEdges.begin();
+        std::advance(it, edgeIndex);
+        int fromVertex = it->first;
+        int toVertex = it->second;
+        allEdges.erase(it);
 
-        int fromVertex = rand() % nbVertices;
-        int toVertex = rand() % nbVertices;
-
-        // Generate a random weight uniformly between 0 and 1
-        int edgeWeight = dist(gen);
+        // Generate a random weight
+        double edgeWeight = dist(gen);
 
         // Add the edge to the graph
         addEdge(fromVertex, toVertex, edgeWeight);
     }
 
     computeDegrees();
+    createAdjList();
 }
 
 int Graph::getGraphNbEdges() {
@@ -49,7 +61,7 @@ int Graph::getGraphNbVertices() {
     return nbVertices;
 }
 
-void Graph::addEdge(int fromVertex, int toVertex, int edgeWeight) {
+void Graph::addEdge(int fromVertex, int toVertex, double edgeWeight) {
     edges.emplace_back(fromVertex, toVertex, edgeWeight);
 }
 
@@ -81,7 +93,7 @@ void Graph::printGraph() {
 void Graph::saveGraph(FILE *fp, int edgeIndex) {
     fprintf(fp, "Graph %d, Vertices %d, Edges %d\n", edgeIndex, nbVertices, nbEdges);
     for (int i = 0; i < nbEdges; i++) {
-        fprintf(fp, "%d %d %d\n", edges[i].getFrom(), edges[i].getTo(), edges[i].getWeight());
+        fprintf(fp, "%d %d %f\n", edges[i].getFrom(), edges[i].getTo(), edges[i].getWeight());
     }
 }
 
@@ -91,3 +103,30 @@ void Graph::computeDegrees() {
         degrees[edges[i].getFrom()]++;
     }
 }
+
+
+
+
+//create adjacency list
+void Graph::createAdjList(){
+    //create adjacency list
+    //iterate through edges
+    for(int i = 0; i < edges.size(); i++){
+        //add edge to adjacency list
+        std::pair<int,double> p = std::make_pair(edges[i].getTo(), edges[i].getWeight());
+        printf("pair: %d %f\n", p.first, p.second);
+        adjList[edges[i].getFrom()].push_back(p);
+    }
+}
+    
+bool Graph::areNeighbors(int v1, int v2){
+    //iterate through adjacency list of v1
+    for(int i = 0; i < adjList[v1].size(); i++){
+        //if v2 is in adjacency list of v1
+        if(adjList[v1][i].first == v2){
+            return true;
+        }
+    }
+    return false;
+}
+

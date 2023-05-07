@@ -21,7 +21,7 @@ public:
      * @param numGraphs Number of graphs to generate.
      * @param filename Name of the file to save the graphs to.
      */
-    static void generateSaveGraphs(int n, int m, int numGraphs, std::string filename);
+    static std::vector<Graph> generateSaveGraphs(int n, int m, int numGraphs, std::string filename);
 
     /**
      * Generate a graph with n vertices and m edges, and save it to a file.

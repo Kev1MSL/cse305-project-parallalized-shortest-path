@@ -5,7 +5,7 @@ Graph GraphGenerator::generateGraph(int n, int m) {
     return graph;
 }
 
-void GraphGenerator::generateSaveGraphs(int n, int m, int numGraphs, std::string filename) {
+std::vector<Graph> GraphGenerator::generateSaveGraphs(int n, int m, int numGraphs, std::string filename) {
     // Vector of graphs to save
     std::vector<Graph> graphs;
 
@@ -24,6 +24,7 @@ void GraphGenerator::generateSaveGraphs(int n, int m, int numGraphs, std::string
         graphs[i].saveGraph(fp, i);
     }
     fclose(fp);
+    return graphs;
 }
 
 void GraphGenerator::generateSaveGraph(int n, int m, std::string filename) {
@@ -61,10 +62,15 @@ std::vector <Graph> GraphGenerator::loadGraphs(std::string filename) {
         }
         graphs[graphId] = Graph(nbVertices, nbEdges, edges, vertices);
     }
+    return graphs;
 }
 
 int main() {
     srand(time(NULL));
-    GraphGenerator::generateSaveGraphs(100, 1000, 100, "graphs.txt");
+    std::vector<Graph> graphs = GraphGenerator::generateSaveGraphs(100, 1000, 100, "graphs.txt");
+    // //print
+    // for (size_t i = 0; i < graphs.size(); i++) {
+    //     graphs[i].printGraph();
+    // }
     return 0;
 }

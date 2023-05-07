@@ -6,6 +6,7 @@
 #include <cmath>
 #include <random>
 #include <iostream>
+#include <set>
 
 /**
  * Class representing an edge in the graph.
@@ -20,7 +21,7 @@ private:
     int toVertex;
 
     // Weight of the edge
-    int edgeWeight;
+    double edgeWeight;
 public:
     /**
      * Constructor for an edge.
@@ -28,7 +29,7 @@ public:
      * @param _to   To vertex.
      * @param _weight  Weight of the edge.
      */
-    Edge(int _from, int _to, int _weight) : fromVertex(_from), toVertex(_to), edgeWeight(_weight) {}
+    Edge(int _from, int _to, double _weight) : fromVertex(_from), toVertex(_to), edgeWeight(_weight) {}
 
     /**
      * Get the source vertex.
@@ -46,8 +47,26 @@ public:
      * Get the weight of the edge.
      * @return Weight of the edge.
      */
-    int getWeight();
+    double getWeight();
 
+    /**
+     * Give ordering for a set of edges
+     * @param other Edge to compare to.
+    */
+    bool operator<(const Edge &other) const {
+        if (fromVertex < other.fromVertex) {
+            return true;
+        } else if (fromVertex == other.fromVertex) {
+            if (toVertex < other.toVertex) {
+                return true;
+            } else if (toVertex == other.toVertex) {
+                if (edgeWeight < other.edgeWeight) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
 };
 
@@ -65,10 +84,14 @@ private:
     // Edges
     std::vector<Edge> edges;
 
+    // Adjancy list:
+    std::vector<std::vector<std::pair<int, double>>> adjList;
+
     // Vertices
     std::vector<int> vertices;
 
     std::vector<int> degrees;
+
 public:
     /**
      * Empty constructor for a graph, used for loading graphs from file.
@@ -92,6 +115,7 @@ public:
     Graph(int _nbVertices, int _nbEdges, std::vector<Edge> _edges, std::vector<int> _vertices):
     nbVertices(_nbVertices), nbEdges(_nbEdges), edges(_edges), vertices(_vertices) {
         computeDegrees();
+        createAdjList();
     };
 
     /**
@@ -124,7 +148,7 @@ public:
      * @param toVertex Destination vertex.
      * @param edgeWeight Weight of the edge.
      */
-    void addEdge(int fromVertex, int toVertex, int edgeWeight);
+    void addEdge(int fromVertex, int toVertex, double edgeWeight);
 
     /**
      * Set the edges in the graph, used for loading graphs from file.
@@ -156,8 +180,17 @@ public:
 
 
 
+    /**
+     * Are neighbors:
+     * @param v1 vertex 1
+     * @param v2 vertex 2
+    */
+    bool areNeighbors(int v1, int v2);
 
-
+    /**
+     * create adjacency list for dijkstra
+    */
+    void createAdjList();
 };
 
 
