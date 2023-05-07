@@ -1,62 +1,85 @@
 #include <iostream>
-#include "graph_gen.cpp"
+#include "graph_gen.h"
+#include "graph.h"
 #include <iostream>
+#include <boost/heap/fibonacci_heap.hpp> // Include the fibonacci heap library
 
-// Dijkstra's algorithm sequentially
-void dijkstra(Graph g, int s, int t) {
-    int n = g.getN();
-    int m = g.getM();
-    std::vector<Edge> edges = g.getEdges();
-    std::vector<int> dist(n, INF);
-    std::vector<int> prev(n, -1);
-    dist[s] = 0;
-    std::vector<bool> visited(n, false);
-    for (int i = 0; i < n; i++) {
-        int u = -1;
-        for (int j = 0; j < n; j++) {
-            if (!visited[j] && (u == -1 || dist[j] < dist[u])) {
-                u = j;
+#define INF std::numeric_limits<int>::max()
+// Dijkstra's algorithm sequentially with fibonacci heap
+
+
+/**
+ * Dijkstra's algorithm for finding the shortest path from a source vertex to a destination vertex.
+ * @param graph Graph to run the algorithm on.
+ * @param source Source vertex.
+ * @param destination Destination vertex.
+ */
+void dijkstra(Graph graph, int source, int destination) {
+    // Initialize the distance array:
+    std::vector<double> distance(graph.getGraphNbVertices(), INF);
+    distance[source] = 0;
+    // Initialize the fibonacci heap:
+    boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<std::greater<std::pair<int, int>>>> heap;
+    
+    // Initialize the heap:
+    heap.push(std::make_pair(0, source));
+
+    // Initialize the visited array:
+    std::vector<bool> visited(graph.getGraphNbVertices(), false);
+
+    // Initialize the previous array:
+    std::vector<int> previous(graph.getGraphNbVertices(), -1);
+
+    // Run the algorithm:
+    while (!heap.empty()) {
+        // Get the vertex with the minimum distance:
+        int vertex = heap.top().second;
+        heap.pop();
+
+        // If the vertex has been visited, continue:
+        if (visited[vertex]) {
+            continue;
+        }
+
+        // Mark the vertex as visited:
+        visited[vertex] = true;
+        // Iterate through the neighbors of the vertex:
+        for (int i = 0; i < graph.getGraphNbVertices(); i++) {
+            // If the vertex is not a neighbor, continue:
+            if (!graph.areNeighbors(vertex, i)) {
+                continue;
             }
-        }
-        if (dist[u] == INF) {
-            break;
-        }
-        visited[u] = true;
-        for (int j = 0; j < m; j++) {
-            int v = edges[j].getTo();
-            int w = edges[j].getWeight();
-            if (dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                prev[v] = u;
+
+            // If the neighbor has been visited, continue:
+            if (visited[i]) {
+                continue;
+            }
+
+            // Get the weight of the edge:
+            // find in edgeset the edge with fromVertex = vertex and toVertex = i
+            
+            
+            double weight = graph.
+
+            // If the distance to the neighbor is greater than the distance to the current vertex plus the weight of the edge, update the distance:
+            if (distance[i] > distance[vertex] + weight) {
+                distance[i] = distance[vertex] + weight;
+                heap.push(std::make_pair(distance[i], i));
+                previous[i] = vertex;
             }
         }
     }
-    if (dist[t] == INF) {
-        std::cout << "No path found" << std::endl;
-    } else {
-        std::vector<int> path;
-        for (int v = t; v != -1; v = prev[v]) {
-            path.push_back(v);
-        }
-        std::reverse(path.begin(), path.end());
-        std::cout << "Path: ";
-        for (int i = 0; i < path.size(); i++) {
-            std::cout << path[i] << " ";
-        }
-        std::cout << std::endl;
-
-    }
+    // Print the distance:
+    std::cout << "Distance from " << source << " to " << destination << ": " << distance[destination] << std::endl;
 }
 
 int main(){
-    // Load the graphs:
-    std::vector<Graph> graphs = loadGraphs("test_100v_1000e_100g.txt");
-
-    // Run Dijkstra's algorithm on each graph:
-    for (int i = 0; i < graphs.size(); i++) {
-        std::cout << "Graph " << i << std::endl;
-        dijkstra(graphs[i], 0, 99);
-    }
+    //generate one graph
+    Graph g = GraphGenerator::generateGraph(3, 3);
+    //perform dijkstra's algorithm
+    //print graph
+    g.printGraph();
+    dijkstra(g, 0, 4);
 
     return 0;
 }
