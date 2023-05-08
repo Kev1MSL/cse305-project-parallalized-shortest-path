@@ -7,7 +7,7 @@
 #include <random>
 #include <iostream>
 #include <set>
-
+#include <algorithm>
 /**
  * Class representing an edge in the graph.
  */
@@ -93,6 +93,7 @@ private:
 
     std::vector<int> degrees;
 
+    int maxDegree;
 public:
     /**
      * Empty constructor for a graph, used for loading graphs from file.
@@ -117,6 +118,7 @@ public:
     nbVertices(_nbVertices), nbEdges(_nbEdges), edges(_edges), vertices(_vertices) {
         computeDegrees();
         createAdjList();
+        computeMaxDegree();
     };
 
     /**
@@ -206,6 +208,31 @@ public:
      * Print adjacency matrix
     */
     void printAdjMatrix();
+
+    /**
+     * Get degrees of vertices
+    */
+    std::vector<int> getGraphDegrees();
+
+    /**
+     * Get neighbors of a vertex
+    */
+    std::set<int> getGraphNeighbours(int v);
+
+    /*
+    * Get adjacency matrix
+    */
+    std::vector<std::vector<double>> getAdjMatrix();
+
+    /*
+    * compute maximum degree of graph
+    */
+    void computeMaxDegree();
+
+    /*
+    * get maximum degree of graph
+    */
+    int getMaxDegree();
 };
 
 

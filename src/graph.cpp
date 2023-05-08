@@ -117,12 +117,15 @@ void Graph::createAdjList(){
     //iterate through edges
     adjMatrix = std::vector<std::vector<double>>(nbVertices, std::vector<double>(nbVertices, 0));
 
-    for(int i = 0; i < edges.size(); i++){
+    for(size_t i = 0; i < edges.size(); i++){
         adjMatrix[edges[i].getFrom()][edges[i].getTo()] = edges[i].getWeight();
 
     }
 }
 
+std::vector<std::vector<double>> Graph::getAdjMatrix(){
+    return adjMatrix;
+}
 double Graph::getEdgeWeight(int v1, int v2){
     return adjMatrix[v1][v2];
 }
@@ -133,11 +136,34 @@ bool Graph::areNeighbors(int v1, int v2){
 
 void Graph::printAdjMatrix(){
     printf("Adjacency Matrix:\n");
-    for(int i = 0; i < adjMatrix.size(); i++){
-        for(int j = 0; j < adjMatrix[i].size(); j++){
+    for(size_t i = 0; i < adjMatrix.size(); i++){
+        for(size_t j = 0; j < adjMatrix[i].size(); j++){
             std::cout << adjMatrix[i][j] << " ";
         }
         std::cout << std::endl;
     }
 }
 
+std::vector<int> Graph::getGraphDegrees(){
+    return degrees;
+}
+
+
+std::set<int> Graph::getGraphNeighbours(int v){
+    std::set<int> neighbours;
+    for(size_t i = 0; i < adjMatrix[v].size(); i++){
+        if(adjMatrix[v][i] != 0){
+            neighbours.insert(i);
+        }
+    }
+    return neighbours;
+}
+
+void Graph::computeMaxDegree(){
+    // assuming that degrees are already found.
+    maxDegree = *std::max_element(degrees.begin(), degrees.end());
+}
+
+int Graph::getMaxDegree(){
+    return maxDegree;
+}

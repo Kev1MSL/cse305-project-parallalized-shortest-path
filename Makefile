@@ -64,7 +64,7 @@ NVCCFLAGS = -arch=sm_60 -std=c++11
 SRC_DIR = src
 GEN_SRC = $(SRC_DIR)/graph_gen.cpp $(SRC_DIR)/graph.cpp
 GEN_OBJ = graph_gen.o graph.o
-PAR_SRC = $(SRC_DIR)/parallel_shortest_paths.cu $(SRC_DIR)/graph.cpp $(SRC_DIR)/graph_gen.cpp
+PAR_SRC = $(SRC_DIR)/parallel_shortest_paths.cpp $(SRC_DIR)/graph.cpp $(SRC_DIR)/graph_gen.cpp
 PAR_OBJ = parallel_shortest_paths.o graph.o graph_gen.o
 SEQ_SRC = $(SRC_DIR)/seq_shortest_path.cpp $(SRC_DIR)/graph.cpp $(SRC_DIR)/graph_gen.cpp
 SEQ_OBJ = seq_shortest_path.o graph.o graph_gen.o
@@ -90,8 +90,8 @@ $(SEQ_EXE): $(SEQ_OBJ)
 graph_gen.o: $(SRC_DIR)/graph_gen.cpp $(SRC_DIR)/graph.h
 	$(CXX) -c $(CFLAGS) -o graph_gen.o $(SRC_DIR)/graph_gen.cpp
 
-parallel_shortest_paths.o: $(SRC_DIR)/parallel_shortest_paths.cu $(SRC_DIR)/graph.h $(SRC_DIR)/graph_gen.h
-	$(NVCC) -c $(NVCCFLAGS) -o parallel_shortest_paths.o $(SRC_DIR)/parallel_shortest_paths.cu
+parallel_shortest_paths.o: $(SRC_DIR)/parallel_shortest_paths.cpp $(SRC_DIR)/graph.h $(SRC_DIR)/graph_gen.h 
+	$(CXX) -c $(CFLAGS) -o parallel_shortest_paths.o $(SRC_DIR)/parallel_shortest_paths.cpp
 
 seq_shortest_path.o: $(SRC_DIR)/seq_shortest_path.cpp $(SRC_DIR)/graph.h $(SRC_DIR)/graph_gen.h
 	$(CXX) -c $(CFLAGS) -o seq_shortest_path.o $(SRC_DIR)/seq_shortest_path.cpp
