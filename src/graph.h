@@ -4,11 +4,24 @@
 #include <vector>
 #include <limits>
 #include <cmath>
+#include <random>
+#include <iostream>
+#include <set>
 
 /**
  * Class representing an edge in the graph.
  */
 class Edge {
+private:
+
+    // Source vertex
+    int fromVertex;
+
+    // Destination vertex
+    int toVertex;
+
+    // Weight of the edge
+    double edgeWeight;
 public:
     /**
      * Constructor for an edge.
@@ -16,7 +29,7 @@ public:
      * @param _to   To vertex.
      * @param _weight  Weight of the edge.
      */
-    Edge(int _from, int _to, int _weight) : fromVertex(_from), toVertex(_to), edgeWeight(_weight) {}
+    Edge(int _from, int _to, double _weight) : fromVertex(_from), toVertex(_to), edgeWeight(_weight) {}
 
     /**
      * Get the source vertex.
@@ -34,24 +47,52 @@ public:
      * Get the weight of the edge.
      * @return Weight of the edge.
      */
-    int getWeight();
+    double getWeight();
 
-private:
+    /**
+     * Give ordering for a set of edges
+     * @param other Edge to compare to.
+    */
+    bool operator<(const Edge &other) const {
+        if (fromVertex < other.fromVertex) {
+            return true;
+        } else if (fromVertex == other.fromVertex) {
+            if (toVertex < other.toVertex) {
+                return true;
+            } else if (toVertex == other.toVertex) {
+                if (edgeWeight < other.edgeWeight) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-    // Source vertex
-    int fromVertex;
-
-    // Destination vertex
-    int toVertex;
-
-    // Weight of the edge
-    int edgeWeight;
 };
 
 /**
  * Class representing a graph.
  */
 class Graph {
+private:
+    // Number of vertices
+    int nbVertices;
+
+    // Number of edges
+    int nbEdges;
+
+    // Edges
+    std::vector<Edge> edges;
+
+    // Adjancy matrix
+    std::vector<std::vector<double>> adjMatrix;
+
+
+    // Vertices
+    std::vector<int> vertices;
+
+    std::vector<int> degrees;
+
 public:
     /**
      * Empty constructor for a graph, used for loading graphs from file.
@@ -64,6 +105,19 @@ public:
      * @param _nbEdges Number of edges in the graph.
      */
     Graph(int _nbVertices, int _nbEdges);
+
+    /**
+     * Constructor for a graph loaded from a file.
+     * @param _nbVertices Number of vertices in the graph.
+     * @param _nbEdges Number of edges in the graph.
+     * @param _edges Edges in the graph as a vector of Edge objects.
+     * @param _vertices Vertices in the graph as a vector of integers.
+     */
+    Graph(int _nbVertices, int _nbEdges, std::vector<Edge> _edges, std::vector<int> _vertices):
+    nbVertices(_nbVertices), nbEdges(_nbEdges), edges(_edges), vertices(_vertices) {
+        computeDegrees();
+        createAdjList();
+    };
 
     /**
      * Get the number of vertices in the graph.
@@ -95,7 +149,7 @@ public:
      * @param toVertex Destination vertex.
      * @param edgeWeight Weight of the edge.
      */
-    void addEdge(int fromVertex, int toVertex, int edgeWeight);
+    void addEdge(int fromVertex, int toVertex, double edgeWeight);
 
     /**
      * Set the edges in the graph, used for loading graphs from file.
@@ -107,22 +161,53 @@ public:
      * Set the vertices in the graph, used for loading graphs from file.
      * @param _vertices Vertices in the graph as a vector of integers.
      */
-    void setVertices(std::vector<int> _vertices);
+    void setVertices(int _vertices);
+    /**
+     * Print the graph.
+     */
+    void printGraph();
+
+    /**
+     * Save the graph to a file.
+     * @param fp File pointer to save the graph to.
+     * @param edgeIndex Index of the edge.
+     */
+    void saveGraph(FILE *fp, int edgeIndex);
+
+    /**
+     * Compute the degrees of the vertices in the graph.
+     */
+    void computeDegrees();
 
 
-private:
-    // Number of vertices
-    int nb_vertices;
 
-    // Number of edges
-    int nb_edges;
+    /**
+     * Checks wether two vertices are neighbors.
+     * @param v1 Vertex 1
+     * @param v2 Vertex 2
+     * @return true if v1 and v2 are neighbors, false otherwise.
+    */
+    bool areNeighbors(int from, int to);
 
-    // Edges
-    std::vector<Edge> edges;
+    /**
+     * Compute the adjacency list of the graph, used for djikstra's algorithm.
+    */
+    void createAdjList();
 
-    // Vertices
-    std::vector<int> vertices;
+    /**
+     * Get the weight of an edge.
+     * @param v1 Vertex 1.
+     * @param v2 Vertex 2.
+     * @return Weight of the edge.
+    */
+    double getEdgeWeight(int from, int to);
+
+    /**
+     * Print adjacency matrix
+    */
+    void printAdjMatrix();
 };
+
 
 
 #endif //CSE305_PROJECT_GRAPH_H
