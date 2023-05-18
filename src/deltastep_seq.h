@@ -15,7 +15,7 @@ public:
 
     void solve();
     void print_solution();
-
+    void solve_light_heavy();
 private:
 
 	void compute_light_and_heavy_edges();
@@ -25,7 +25,7 @@ private:
 	void print_all_buckets() const;
 	void print_bucket(size_t bucket_id) const;
 
-    void solve_light_heavy();
+
 
 
 	Graph graph_;

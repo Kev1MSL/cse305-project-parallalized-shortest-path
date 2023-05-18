@@ -167,11 +167,38 @@ void DeltaStepSequential::solve(){
 void DeltaStepSequential::solve_light_heavy(){
     while (bucket_counter_ < buckets_.size())
     {
-        std::vector<Edge> light_request;
-        std::vector<Edge> heavy_request;
-        while (!buckets_[bucket_counter_].empty()){
-            if
+        std::vector<Edge> light_request, heavy_request;
+        std::set<int> current_bucket = buckets_[bucket_counter_];
+        while (!current_bucket.empty()){
+            //Find heavy and light requests
 
+            for (const int vertex_id : current_bucket){
+                buckets_[bucket_counter_].erase(vertex_id);
+                //Generate Requests:
+                const std::set<int> neighbors = graph_.getGraphNeighbours(vertex_id);
+                for (const int neighbor_vertex : neighbors)
+                {
+                    if (adj_matrix_[vertex_id][neighbor_vertex] <= delta_)
+                    {
+                        light_request.emplace_back(vertex_id, neighbor_vertex,
+                                                   graph_.getEdgeWeight(vertex_id, neighbor_vertex));
+                    } else
+                    {
+                        heavy_request.emplace_back(vertex_id, neighbor_vertex,
+                                                   graph_.getEdgeWeight(vertex_id, neighbor_vertex));
+                    }
+                }
+
+            }
+            //Resolve light requests
+            auto light_request_it = light_request.begin();
+            while (light_request_it != light_request.end())
+            {
+                relax(*light_request_it);
+                light_request.erase(light_request_it);
+                light_request_it++;
+            }
+        current_bucket = buckets_[bucket_counter_];
         }
     }
 }

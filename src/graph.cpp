@@ -14,6 +14,7 @@ double Edge::get_weight() {
 	return edge_weight_;
 }
 
+
 Graph::Graph(int _nbVertices, int _nbEdges) {
 	nbVertices = _nbVertices;
 	nbEdges = _nbEdges;

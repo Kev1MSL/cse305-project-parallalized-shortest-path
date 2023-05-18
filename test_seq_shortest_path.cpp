@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
     graph.printAdjMatrix();
 
     DeltaStepSequential delta_step_seq = DeltaStepSequential(graph, sourceVertex);
-    delta_step_seq.solve();
+    delta_step_seq.solve_light_heavy();
     delta_step_seq.print_solution();
 
     DijkstraFibonacciHeap::dijkstra(graph, sourceVertex, destinationVertex);
