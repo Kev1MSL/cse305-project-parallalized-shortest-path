@@ -74,7 +74,6 @@ ParallelSSSP:: ParallelSSSP(size_t _thread_count, Graph _graph, int _source){
 }
 
 void ParallelSSSP::findRequests(Request_vect* request_light, Request_vect* request_heavy, size_t begin, size_t end){
-    ;
     for (int v = begin; v <= end; v++){
         //GenRequests 
         

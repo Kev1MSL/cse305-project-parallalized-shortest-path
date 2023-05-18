@@ -10,7 +10,7 @@ project(cse305_project LANGUAGES CXX CUDA)
 #         )
 
 add_executable(graph_gen test_generate_graph.cpp src/graph_gen.cpp src/graph_gen.h src/graph.cpp src/graph.h)
-add_executable(seq_shortest_path src/seq_shortest_path.cpp src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h)
+add_executable(seq_shortest_path src/seq_shortest_path.cpp src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h "src/deltastep_seq.cpp" "src/deltastep_seq.h" )
 
 # Request that particles be built with -std=c++11
 # As this is a public compile feature anything that links to 

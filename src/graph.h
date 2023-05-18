@@ -2,12 +2,9 @@
 #define CSE305_PROJECT_GRAPH_H
 
 #include <vector>
-#include <limits>
-#include <cmath>
-#include <random>
 #include <iostream>
 #include <set>
-#include <algorithm>
+#include <random>
 /**
  * Class representing an edge in the graph.
  */
@@ -15,52 +12,52 @@ class Edge {
 private:
 
     // Source vertex
-    int fromVertex;
+    int from_vertex_;
 
     // Destination vertex
-    int toVertex;
+    int to_vertex_;
 
     // Weight of the edge
-    double edgeWeight;
+    double edge_weight_;
 public:
     /**
      * Constructor for an edge.
-     * @param _from From vertex.
-     * @param _to   To vertex.
-     * @param _weight  Weight of the edge.
+     * @param from From vertex.
+     * @param to   To vertex.
+     * @param weight  Weight of the edge.
      */
-    Edge(int _from, int _to, double _weight) : fromVertex(_from), toVertex(_to), edgeWeight(_weight) {}
+    Edge(const int from, const int to, const double weight) : from_vertex_(from), to_vertex_(to), edge_weight_(weight) {}
 
     /**
      * Get the source vertex.
      * @return Source vertex.
      */
-    int getFrom();
+    int get_from();
 
     /**
      * Get the destination vertex.
      * @return Destination vertex.
      */
-    int getTo();
+    int get_to();
 
     /**
      * Get the weight of the edge.
      * @return Weight of the edge.
      */
-    double getWeight();
+    double get_weight();
 
     /**
      * Give ordering for a set of edges
      * @param other Edge to compare to.
     */
     bool operator<(const Edge &other) const {
-        if (fromVertex < other.fromVertex) {
+        if (from_vertex_ < other.from_vertex_) {
             return true;
-        } else if (fromVertex == other.fromVertex) {
-            if (toVertex < other.toVertex) {
+        } if (from_vertex_ == other.from_vertex_) {
+            if (to_vertex_ < other.to_vertex_) {
                 return true;
-            } else if (toVertex == other.toVertex) {
-                if (edgeWeight < other.edgeWeight) {
+            } if (to_vertex_ == other.to_vertex_) {
+                if (edge_weight_ < other.edge_weight_) {
                     return true;
                 }
             }
@@ -184,9 +181,9 @@ public:
 
 
     /**
-     * Checks wether two vertices are neighbors.
-     * @param v1 Vertex 1
-     * @param v2 Vertex 2
+     * Checks whether two vertices are neighbors.
+     * @param from Vertex 1
+     * @param to Vertex 2
      * @return true if v1 and v2 are neighbors, false otherwise.
     */
     bool areNeighbors(int from, int to);
@@ -198,8 +195,8 @@ public:
 
     /**
      * Get the weight of an edge.
-     * @param v1 Vertex 1.
-     * @param v2 Vertex 2.
+     * @param from Vertex 1.
+     * @param to Vertex 2.
      * @return Weight of the edge.
     */
     double getEdgeWeight(int from, int to);
@@ -233,6 +230,11 @@ public:
     * get maximum degree of graph
     */
     int getMaxDegree();
+
+    /**
+     * @brief Print graph info to the console. 
+     */
+    void print_graph_info() const;
 };
 
 
