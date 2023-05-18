@@ -237,33 +237,33 @@ vector<double> ParallelSSSP::getDist(){
 vector<int> ParallelSSSP::getPred(){
     return pred;
 }
-int main(int argc, char* argv[]) {
-
-    if (argc != 4) {
-        fprintf(stderr, "Usage: ./seq_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex>\n");
-        return -1;
-    }
-
-    // Get the arguments
-    std::string path = argv[1];
-    int sourceVertex = atoi(argv[2]);
-    int destinationVertex = atoi(argv[3]);
-    Graph graph = GraphGenerator::loadGraphs(path)[0];
-    graph.printGraph();
-    graph.printAdjMatrix();
-
-    ParallelSSSP p = ParallelSSSP(2, graph, sourceVertex);
-    p.solveSSSP();
-    //print distance and predecessor vectors
-    vector<double> dist = p.getDist();
-    vector<int> pred = p.getPred();
-    //print distance to destination vertex
-    cout << "Distance to destination vertex: " << dist[destinationVertex] << endl;
-    //print path to destination vertex
-
-    return 0;
-}
-
+//int main(int argc, char* argv[]) {
+//
+//    if (argc != 4) {
+//        fprintf(stderr, "Usage: ./seq_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex>\n");
+//        return -1;
+//    }
+//
+//    // Get the arguments
+//    std::string path = argv[1];
+//    int sourceVertex = atoi(argv[2]);
+//    int destinationVertex = atoi(argv[3]);
+//    Graph graph = GraphGenerator::loadGraphs(path)[0];
+//    graph.printGraph();
+//    graph.printAdjMatrix();
+//
+//    ParallelSSSP p = ParallelSSSP(2, graph, sourceVertex);
+//    p.solveSSSP();
+//    //print distance and predecessor vectors
+//    vector<double> dist = p.getDist();
+//    vector<int> pred = p.getPred();
+//    //print distance to destination vertex
+//    cout << "Distance to destination vertex: " << dist[destinationVertex] << endl;
+//    //print path to destination vertex
+//
+//    return 0;
+//}
+//
 
 
 //TODO figure out why find requests is not working properly, never deletes all of the edges from bucket 0, 

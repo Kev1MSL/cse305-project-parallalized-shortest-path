@@ -12,7 +12,9 @@ public:
 	DeltaStepSequential(const Graph& graph, const int source);
 	~DeltaStepSequential () = default;
 
-	
+
+    void solve();
+    void print_solution();
 
 private:
 
@@ -21,7 +23,9 @@ private:
 
 	void print_light_and_heavy_edges();
 	void print_all_buckets() const;
-	void print_bucket(const size_t bucket_id) const;
+	void print_bucket(size_t bucket_id) const;
+
+    void solve_light_heavy();
 
 
 	Graph graph_;

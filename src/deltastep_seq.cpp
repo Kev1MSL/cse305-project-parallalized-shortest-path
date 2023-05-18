@@ -134,3 +134,54 @@ void DeltaStepSequential::print_bucket(const size_t bucket_id) const
 	std::cout << std::endl;
 }
 
+void DeltaStepSequential::solve(){
+    while (bucket_counter_ < buckets_.size())
+    {
+        std::set<int> current_bucket = buckets_[bucket_counter_];
+        while (!current_bucket.empty()){
+            std::set<int> current_bucket_update;
+
+            for (const int vertex_id : current_bucket){
+                const std::set<int> neighbors = graph_.getGraphNeighbours(vertex_id);
+                for (const int neighbor_vertex : neighbors){
+                    int q = std::floor(dist_[neighbor_vertex] / delta_);
+                    dist_[neighbor_vertex] = std::min(dist_[vertex_id] + graph_.getEdgeWeight(vertex_id, neighbor_vertex), dist_[neighbor_vertex]);
+                    int q_prime = std::floor(dist_[neighbor_vertex] / delta_);
+                    if (q_prime < q){
+                        buckets_[q].erase(neighbor_vertex);
+                        buckets_[q_prime].insert(neighbor_vertex);
+                        if (q_prime == bucket_counter_){
+                            current_bucket_update.insert(neighbor_vertex);
+                        }
+                    }
+                }
+            }
+            current_bucket = current_bucket_update;
+        }
+        bucket_counter_++;
+        while (buckets_[bucket_counter_].empty() && bucket_counter_ < graph_.getGraphNbVertices()){
+            bucket_counter_++;
+        }
+    }
+}
+void DeltaStepSequential::solve_light_heavy(){
+    while (bucket_counter_ < buckets_.size())
+    {
+        std::vector<Edge> light_request;
+        std::vector<Edge> heavy_request;
+        while (!buckets_[bucket_counter_].empty()){
+            if
+
+        }
+    }
+}
+
+void DeltaStepSequential::print_solution()
+{
+    std::cout << "Solution: " << std::endl;
+    for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+    {
+        std::cout << "Vertex " << i << ": " << dist_[i] << std::endl;
+    }
+}
+
