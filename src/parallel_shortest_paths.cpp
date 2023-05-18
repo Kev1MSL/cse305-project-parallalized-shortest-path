@@ -169,6 +169,7 @@ void ParallelSSSP::solveSSSP(){
             for (size_t i = 0; i < req_threads - 1; ++i) {
                 workers[i].join();
             }
+
             //print request_light
             // printf("request_light size: %lu\n", request_light.size());
             // //print every element of request light

@@ -133,7 +133,23 @@ void DeltaStepSequential::print_bucket(const size_t bucket_id) const
 	}
 	std::cout << std::endl;
 }
+void DeltaStepSequential::relax(Edge e){
+    int u = e.get_from();
+    int v = e.get_to();
+    double w = e.get_weight();
+    double tentative = dist_[u] + w;
+    if (tentative < dist_[v]){
 
+        int i = floor(dist_[v]/delta_);
+        int j = floor(tentative/delta_);
+        if (i != j){
+            buckets_[i].erase(v);
+            buckets_[j].insert(v);
+        }
+        dist_[v] = tentative;
+        pred_[v] = u;
+    }
+}
 void DeltaStepSequential::solve(){
     while (bucket_counter_ < buckets_.size())
     {
@@ -199,6 +215,17 @@ void DeltaStepSequential::solve_light_heavy(){
                 light_request_it++;
             }
         current_bucket = buckets_[bucket_counter_];
+        }
+        //Resolve Heavy requests
+        auto heavy_request_it = heavy_request.begin();
+        while (heavy_request_it != heavy_request.end()){
+            relax(*heavy_request_it);
+            light_request.erase(heavy_request_it);
+            heavy_request_it++;
+        }
+        bucket_counter_++;
+        while (buckets_[bucket_counter_].empty() && bucket_counter_ < graph_.getGraphNbVertices()){
+            bucket_counter_++;
         }
     }
 }
