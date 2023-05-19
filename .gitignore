@@ -55,3 +55,4 @@ graph_gen
 build
 .vscode
 .vs
+/CMakeSettings.json

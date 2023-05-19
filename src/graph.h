@@ -213,7 +213,7 @@ public:
     /**
      * Get neighbors of a vertex
     */
-    std::set<int> getGraphNeighbours(int v);
+    std::set<int> get_vertex_neighbors(int v);
 
     /*
     * Get adjacency matrix

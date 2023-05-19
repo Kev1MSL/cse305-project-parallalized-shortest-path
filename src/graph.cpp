@@ -151,7 +151,7 @@ std::vector<int> Graph::getGraphDegrees() {
 }
 
 
-std::set<int> Graph::getGraphNeighbours(int v) {
+std::set<int> Graph::get_vertex_neighbors(int v) {
 	std::set<int> neighbours;
 	for (size_t i = 0; i < adjMatrix[v].size(); i++) {
 		if (adjMatrix[v][i] != 0) {

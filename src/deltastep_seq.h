@@ -9,7 +9,7 @@
 class DeltaStepSequential
 {
 public:
-	DeltaStepSequential(const Graph& graph, const int source);
+	DeltaStepSequential(const Graph& graph, const int source, bool is_verbose = false);
 	~DeltaStepSequential () = default;
 
 
@@ -19,13 +19,14 @@ public:
 private:
 
 	void compute_light_and_heavy_edges();
-	void find_requests(std::vector<Edge>* light_requests, std::vector<Edge>* heavy_requests);
+	void find_bucket_requests(const std::set<int>& bucket, std::vector<Edge>* light_requests, std::vector<Edge>* heavy_requests);
+	void relax(Edge selected_edge);
+	void resolve_requests(std::vector<Edge>* requests);
+
 
 	void print_light_and_heavy_edges();
 	void print_all_buckets() const;
 	void print_bucket(size_t bucket_id) const;
-    void relax(Edge selected_edge);
-
 
 
 
@@ -40,6 +41,7 @@ private:
 	std::vector<std::vector<int>> heavy_edges_;
 	std::vector<std::vector<double>> adj_matrix_;
 	int bucket_counter_ = 0;
+	bool is_verbose_;
 
 };
 
