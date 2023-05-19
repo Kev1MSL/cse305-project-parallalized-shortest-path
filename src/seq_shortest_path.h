@@ -7,6 +7,23 @@
 #define INF std::numeric_limits<int>::max()
 // Dijkstra's algorithm sequentially with fibonacci heap
 
+//custom comparator for fibonacci heap
+struct CustomComparator { 
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const {
+        // Define the custom ordering logic here
+        // For example, order by the first element (weight) in ascending order
+        return lhs.first > rhs.first;
+    }
+};
+void print_heap(boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<CustomComparator>> heap) {
+    printf("Heap: ");
+    while (!heap.empty()) {
+        printf("%d ", heap.top().second);
+        heap.pop();
+    }
+    printf("\n");
+};
+
 
 class DijkstraFibonacciHeap {
 public:
@@ -19,58 +36,42 @@ public:
     static void dijkstra(Graph graph, int source, int destination) {
         // Initialize the distance array:
         std::vector<double> distance(graph.getGraphNbVertices(), INF);
-        distance[source] = 0;
+        
         // Initialize the fibonacci heap:
-        boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<std::greater<std::pair<int, int> > > > heap;
-
+        boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<CustomComparator>> heap;
         // Initialize the heap:
-        heap.push(std::make_pair(0, source));
+        for (int i = 0; i < graph.getGraphNbVertices(); i++) {
+            heap.push(std::make_pair(distance[i], i));
+        }
 
         // Initialize the visited array:
-        std::vector<bool> visited(graph.getGraphNbVertices(), false);
-
         // Initialize the previous array:
         std::vector<int> previous(graph.getGraphNbVertices(), -1);
+        distance[source] = 0;
 
-        // Run the algorithm:
+        // Run the dijkstra algorithm:
         while (!heap.empty()) {
             // Get the vertex with the minimum distance:
-            int vertex = heap.top().second;
+            int u = heap.top().second;
             heap.pop();
 
-            // If the vertex has been visited, continue:
-            if (visited[vertex]) {
-                continue;
-            }
+            // Get the neighbors of the vertex:
+            std::set<int> neighbors = graph.getGraphNeighbours(u);
 
-            // Mark the vertex as visited:
-            visited[vertex] = true;
-            // Iterate through the neighbors of the vertex:
-            for (int i = 0; i < graph.getGraphNbVertices(); i++) {
-                // If the vertex is not a neighbor, continue:
-                if (!graph.areNeighbors(vertex, i)) {
-                    continue;
-                }
-
-                // If the neighbor has been visited, continue:
-                if (visited[i]) {
-                    continue;
-                }
-
-                // Get the weight of the edge:
-                // find in edgeset the edge with fromVertex = vertex and toVertex = i
-
-
-                double weight = graph.getEdgeWeight(vertex, i);
-
-                // If the distance to the neighbor is greater than the distance to the current vertex plus the weight of the edge, update the distance:
-                if (distance[i] > distance[vertex] + weight) {
-                    distance[i] = distance[vertex] + weight;
-                    heap.push(std::make_pair(distance[i], i));
-                    previous[i] = vertex;
+            // Iterate through the neighbors:
+            for (auto it = neighbors.begin(); it != neighbors.end(); it++) {
+                int v = *it;
+                double alt = distance[u] + graph.getEdgeWeight(u, v);
+                if (alt < distance[v]) {
+                    distance[v] = alt;
+                    previous[v] = u;
+                    // Update the heap:
+                    heap.push(std::make_pair(distance[v], v));
                 }
             }
         }
+        
+        
         std::cout << std::endl << "Dijkstra output" << std::endl;
         std::cout << "Distance from " << source << " to " << destination << ": " << distance[destination] << std::endl;
 
