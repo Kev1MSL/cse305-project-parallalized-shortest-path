@@ -73,6 +73,12 @@ public:
         }
         std::cout << std::endl << "Dijkstra output" << std::endl;
         std::cout << "Distance from " << source << " to " << destination << ": " << distance[destination] << std::endl;
+
+        // other distances:
+        std::cout << "All distances: " << std::endl;
+        for (int i = 0; i < graph.getGraphNbVertices(); i++) {
+            std::cout << "Distance from " << source << " to " << i << ": " << distance[i] << std::endl;
+        }
     }
 };
 

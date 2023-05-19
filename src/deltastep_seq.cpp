@@ -24,7 +24,7 @@ DeltaStepSequential::DeltaStepSequential(const Graph& graph, const int source)
 	const int bucket_size = static_cast<int> (graph_.getGraphNbVertices() / delta_) + 1;
 	buckets_.resize(bucket_size);
 
-	std::cout << "Bucket size: " << bucket_size << std::endl;
+	// std::cout << "Bucket size: " << bucket_size << std::endl;
 
 	for (int i = 0; i < graph_.getGraphNbVertices(); i++)
 	{
@@ -39,9 +39,9 @@ DeltaStepSequential::DeltaStepSequential(const Graph& graph, const int source)
 	pred_[source_] = source_;
 
 	// Display information before the algorithm starts
-	this->print_light_and_heavy_edges();
-	graph_.print_graph_info();
-	this->print_all_buckets();
+	// this->print_light_and_heavy_edges();
+	// graph_.print_graph_info();
+	// this->print_all_buckets();
 }
 
 void DeltaStepSequential::compute_light_and_heavy_edges()
@@ -70,7 +70,7 @@ void DeltaStepSequential::find_requests(std::vector<Edge>* light_requests, std::
 	for (int vertex_id = 0; vertex_id < graph_.getGraphNbVertices(); vertex_id++)
 	{
 		buckets_[bucket_counter_].erase(vertex_id);
-		std::cout << "Erased " << vertex_id << " from bucket " << bucket_counter_ << std::endl;
+		// std::cout << "Erased " << vertex_id << " from bucket " << bucket_counter_ << std::endl;
 		this->print_bucket(bucket_counter_);
 
 		for (const int light_neighbor_vertex : light_edges_[vertex_id])

@@ -22,8 +22,16 @@ int main(int argc, char* argv[]) {
     graph.printAdjMatrix();
 
     auto delta_step_seq = DeltaStepSequential(graph, source_vertex);
-    delta_step_seq.solve_light_heavy();
+    
+    delta_step_seq.solve();
+    printf("Delta step sequential\n");
     delta_step_seq.print_solution();
+
+    auto delta_step_seq_lh = DeltaStepSequential(graph, source_vertex);
+    
+    delta_step_seq_lh.solve_light_heavy();
+    printf("Delta step sequential light heavy\n");
+    delta_step_seq_lh.print_solution();
 
     DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);
 
