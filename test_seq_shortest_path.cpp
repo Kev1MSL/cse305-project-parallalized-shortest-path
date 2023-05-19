@@ -9,7 +9,7 @@
 
 int main(const int argc, char* argv[]) {
 	if (argc < 4) {
-		fprintf(stderr, "Usage: ./seq_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex>\n");
+		std::cerr << "Usage: ./seq_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex>" << std::endl;
 		return -1;
 	}
 	bool is_verbose = false;
@@ -29,6 +29,8 @@ int main(const int argc, char* argv[]) {
 	graph.printGraph();
 	graph.printAdjMatrix();
 
+	std::cout << "--------------------------------------------------" << std::endl;
+
 	if (source_vertex < 0 || source_vertex >= graph.getGraphNbVertices())
 	{
 		std::cerr << "[ERROR] Source vertex is out of bounds" << std::endl;
@@ -37,12 +39,15 @@ int main(const int argc, char* argv[]) {
 
 	auto delta_step_seq = DeltaStepSequential(graph, source_vertex, is_verbose);
 	delta_step_seq.solve();
+
+	std::cout << std::endl << "Basic Delta Step solution: " << std::endl;
 	delta_step_seq.print_solution();
 
     auto delta_step_seq_lh = DeltaStepSequential(graph, source_vertex);
-    
     delta_step_seq_lh.solve_light_heavy();
-    printf("Delta step sequential light heavy\n");
+
+
+    std::cout << std::endl << "Light Heavy Delta Step solution: " << std::endl;
     delta_step_seq_lh.print_solution();
 
     DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);

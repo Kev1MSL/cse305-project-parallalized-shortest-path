@@ -98,34 +98,6 @@ void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std:
 			}
 		}
 	}
-
-	/*for (int vertex_id = 0; vertex_id < graph_.getGraphNbVertices(); vertex_id++)
-	{
-		buckets_[bucket_counter_].erase(vertex_id);
-		if (is_verbose_)
-		{
-			std::cout << "Erased " << vertex_id << " from bucket " << bucket_counter_ << std::endl;
-			this->print_bucket(bucket_counter_);
-		}
-
-
-		for (const int light_neighbor_vertex : light_edges_[vertex_id])
-		{
-			light_requests->push_back(Edge(
-				vertex_id,
-				light_neighbor_vertex,
-				graph_.getEdgeWeight(vertex_id, light_neighbor_vertex)));
-		}
-
-		for (const int heavy_neighbor_vertex : heavy_edges_[vertex_id])
-		{
-			heavy_requests->push_back(Edge(
-				vertex_id,
-				heavy_neighbor_vertex,
-				graph_.getEdgeWeight(vertex_id, heavy_neighbor_vertex)));
-		}
-
-	}*/
 }
 
 void DeltaStepSequential::print_light_and_heavy_edges()

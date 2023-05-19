@@ -18,9 +18,11 @@ set(CMAKE_CXX_STANDARD 20)
 #         )
 
 add_executable(graph_gen test_generate_graph.cpp src/graph_gen.cpp src/graph_gen.h src/graph.cpp src/graph.h)
-add_executable(seq_shortest_path src/seq_shortest_path.h src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h "src/deltastep_seq.cpp" "src/deltastep_seq.h" test_seq_shortest_path.cpp)
+add_executable(seq_shortest_path src/seq_shortest_path.h src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h src/deltastep_seq.cpp src/deltastep_seq.h test_seq_shortest_path.cpp)
+add_executable(parallel_shortest_path src/seq_shortest_path.h src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h src/deltastep_parallel.cpp src/deltastep_parallel.h test_parallel_shortest_path.cpp)
 
 target_link_libraries(seq_shortest_path ${Boost_LIBRARIES})
+target_link_libraries(parallel_shortest_path ${Boost_LIBRARIES})
 
 #target_compile_features(graph_gen PUBLIC cxx_std_11)
 #target_compile_features(seq_shortest_path PUBLIC cxx_std_11)
