@@ -14,46 +14,19 @@ int main(int argc, char* argv[]) {
     }
 
     // Get the arguments
-        std::string path = argv[1];
-    int sourceVertex = atoi(argv[2]);
-    int destinationVertex = atoi(argv[3]);
+	const std::string path = argv[1];
+    const int source_vertex = strtol(argv[2], nullptr, 10);
+    const int destination_vertex = strtol(argv[3], nullptr, 10);
     Graph graph = GraphGenerator::loadGraphs(path)[0];
     graph.printGraph();
     graph.printAdjMatrix();
 
-    DeltaStepSequential delta_step_seq = DeltaStepSequential(graph, sourceVertex);
+    auto delta_step_seq = DeltaStepSequential(graph, source_vertex);
     delta_step_seq.solve_light_heavy();
     delta_step_seq.print_solution();
 
-    DijkstraFibonacciHeap::dijkstra(graph, sourceVertex, destinationVertex);
+    DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);
 
 
     return 0;
 }
-
-//int main(int argc, char* argv[]) {
-//
-//    if (argc != 4) {
-//        fprintf(stderr, "Usage: ./seq_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex>\n");
-//        return -1;
-//    }
-//
-//    // Get the arguments
-//    std::string path = argv[1];
-//    int sourceVertex = atoi(argv[2]);
-//    int destinationVertex = atoi(argv[3]);
-//    Graph graph = GraphGenerator::loadGraphs(path)[0];
-//    graph.printGraph();
-//    graph.printAdjMatrix();
-//
-//    ParallelSSSP p = ParallelSSSP(2, graph, sourceVertex);
-//    p.solveSSSP();
-//    //print distance and predecessor vectors
-//    vector<double> dist = p.getDist();
-//    vector<int> pred = p.getPred();
-//    //print distance to destination vertex
-//    cout << "Distance to destination vertex: " << dist[destinationVertex] << endl;
-//    //print path to destination vertex
-//
-//    return 0;
-//}

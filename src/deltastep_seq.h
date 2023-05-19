@@ -24,7 +24,7 @@ private:
 	void print_light_and_heavy_edges();
 	void print_all_buckets() const;
 	void print_bucket(size_t bucket_id) const;
-    void relax(Edge e);
+    void relax(Edge selected_edge);
 
 
 
