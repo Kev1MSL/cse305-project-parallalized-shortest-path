@@ -63,20 +63,23 @@ public:
 
 				double weight = graph.getEdgeWeight(vertex, i);
 
-				// If the distance to the neighbor is greater than the distance to the current vertex plus the weight of the edge, update the distance:
-				if (distance[i] > distance[vertex] + weight) {
-					distance[i] = distance[vertex] + weight;
-					heap.push(std::make_pair(distance[i], i));
-					previous[i] = vertex;
-				}
-			}
-		}
-		std::cout << std::endl << "Dijkstra output" << std::endl;
-		for (size_t i = 0; i < distance.size(); i++)
-		{
-			std::cout << "Distance from " << source << " to " << i << " is " << distance[i] << std::endl;
-		}
-	}
+                // If the distance to the neighbor is greater than the distance to the current vertex plus the weight of the edge, update the distance:
+                if (distance[i] > distance[vertex] + weight) {
+                    distance[i] = distance[vertex] + weight;
+                    heap.push(std::make_pair(distance[i], i));
+                    previous[i] = vertex;
+                }
+            }
+        }
+        std::cout << std::endl << "Dijkstra output" << std::endl;
+        std::cout << "Distance from " << source << " to " << destination << ": " << distance[destination] << std::endl;
+
+        // other distances:
+        std::cout << "All distances: " << std::endl;
+        for (int i = 0; i < graph.getGraphNbVertices(); i++) {
+            std::cout << "Distance from " << source << " to " << i << ": " << distance[i] << std::endl;
+        }
+    }
 };
 
 /**

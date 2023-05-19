@@ -56,3 +56,5 @@ build
 .vscode
 .vs
 /CMakeSettings.json
+/Makefile
+/seq_shortest_path

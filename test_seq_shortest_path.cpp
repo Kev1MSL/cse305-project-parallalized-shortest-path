@@ -36,10 +36,16 @@ int main(const int argc, char* argv[]) {
 	}
 
 	auto delta_step_seq = DeltaStepSequential(graph, source_vertex, is_verbose);
-	delta_step_seq.solve_light_heavy();
+	delta_step_seq.solve();
 	delta_step_seq.print_solution();
 
-	DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);
+    auto delta_step_seq_lh = DeltaStepSequential(graph, source_vertex);
+    
+    delta_step_seq_lh.solve_light_heavy();
+    printf("Delta step sequential light heavy\n");
+    delta_step_seq_lh.print_solution();
+
+    DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);
 
 	return 0;
 }
