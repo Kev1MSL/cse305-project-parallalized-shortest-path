@@ -29,8 +29,8 @@ private:
 		const std::set<int>::const_iterator& end);
 	void resolve_requests(
 		const std::vector<Edge>* requests,
-		const int begin,
-		const int end
+		const size_t begin,
+		const size_t end
 	);
 
 
@@ -54,6 +54,9 @@ private:
 	int thread_number_;
 	std::mutex light_request_mutex_;
 	std::mutex heavy_request_mutex_;
+	std::mutex relax_bucket_erase_mutex;
+	std::mutex relax_bucket_insert_mutex;
+	std::mutex erase_bucket_mutex;
 };
 
 #endif // !CSE305_PROJECT_DELTA_STEP_PARALLEL_H

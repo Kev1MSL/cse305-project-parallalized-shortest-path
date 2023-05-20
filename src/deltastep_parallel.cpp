@@ -73,14 +73,21 @@ void DeltaStepParallel::relax(Edge selected_edge)
 
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
+		//std::lock_guard<std::mutex> lock(relax_bucket_erase_mutex);
+		relax_bucket_erase_mutex.lock();
 		if (i < buckets_.size() && i >= 0)
 		{
+			//std::lock_guard<std::mutex> lock(relax_bucket_erase_mutex);
 			buckets_[i].erase(to_vertex);
+			
 		}
 		if (j < buckets_.size() && j >= 0)
 		{
+			//std::lock_guard<std::mutex> lock(relax_bucket_insert_mutex);
 			buckets_[j].insert(to_vertex);
+			
 		}
+		relax_bucket_erase_mutex.unlock();
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
 	}
@@ -135,8 +142,9 @@ void DeltaStepParallel::find_bucket_requests(std::vector<Edge>* light_requests,
 {
 	while (begin != end)
 	{
-		
+		erase_bucket_mutex.lock();
 		buckets_[bucket_counter_].erase(*begin);
+		erase_bucket_mutex.unlock();
 		if (is_verbose_)
 		{
 			std::cout << "Erased " << *begin << " from bucket " << bucket_counter_ << std::endl;
@@ -170,9 +178,9 @@ void DeltaStepParallel::find_bucket_requests(std::vector<Edge>* light_requests,
 	}
 }
 
-void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, const int begin, const int end)
+void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, const size_t begin, const size_t end)
 {
-	for (int i = begin; i < end; i++)
+	for (size_t i = begin; i < end; i++)
 	{
 		this->relax((*requests)[i]);
 	}
@@ -208,17 +216,24 @@ void DeltaStepParallel::solve()
 
 			for (size_t i = 0; i < req_threads - 1; i++)
 			{
-				auto end = start_block;
-				std::advance(end, bucket_chunk_size);
-				find_request_workers[i] = std::thread(
-					&DeltaStepParallel::find_bucket_requests,
-					this,
-					&light_requests,
-					&heavy_requests,
-					start_block,
-					end
-				);
-				start_block = end;
+				try
+				{
+					auto end = start_block;
+					std::advance(end, bucket_chunk_size);
+					find_request_workers[i] = std::thread(
+						&DeltaStepParallel::find_bucket_requests,
+						this,
+						&light_requests,
+						&heavy_requests,
+						start_block,
+						end
+					);
+					start_block = end;
+				}
+				catch (const std::exception& e)
+				{
+					std::cout << e.what() << std::endl;
+				}
 			}
 			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end());
 			for (auto& worker : find_request_workers)

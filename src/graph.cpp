@@ -180,7 +180,7 @@ void Graph::print_graph_info() const
 		std::cout << degrees[i] << " ";
 	}
 	std::cout << std::endl;
-	std::cout << "Adjacency Matrix:" << std::endl;
+	/*std::cout << "Adjacency Matrix:" << std::endl;
 	for (int i = 0; i < nbVertices; i++)
 	{
 		for (int j = 0; j < nbVertices; j++)
@@ -189,5 +189,5 @@ void Graph::print_graph_info() const
 		}
 		std::cout << std::endl;
 	}
-	std::cout << std::endl;
+	std::cout << std::endl;*/
 }

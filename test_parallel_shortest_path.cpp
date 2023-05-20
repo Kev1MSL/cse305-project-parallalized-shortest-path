@@ -28,6 +28,9 @@ int main(const int argc, char* argv[])
 	{
 		graph.printGraph();
 		graph.printAdjMatrix();
+	}else
+	{
+		graph.print_graph_info();
 	}
 
 	std::cout << "--------------------------------------------------" << std::endl;
