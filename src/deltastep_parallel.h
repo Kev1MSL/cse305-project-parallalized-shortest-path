@@ -4,6 +4,7 @@
 
 #include "graph.h"
 #include <thread>
+#include <mutex>
 
 class DeltaStepParallel
 {
@@ -12,6 +13,8 @@ public:
 	~DeltaStepParallel() = default;
 	void solve();
 	void print_solution();
+	[[nodiscard]] std::vector <double> get_dist() const { return dist_; }
+	[[nodiscard]] double get_dist(const int source) const { return get_dist()[source]; }
 
 private:
 	// Same as sequential
@@ -22,9 +25,10 @@ private:
 	void find_bucket_requests(
 		std::vector<Edge>* light_requests,
 		std::vector<Edge>* heavy_requests,
-		std::set<int>::const_iterator begin, const std::set<int>::const_iterator& end);
+		std::set<int>::const_iterator begin, 
+		const std::set<int>::const_iterator& end);
 	void resolve_requests(
-		std::vector<Edge>* requests,
+		const std::vector<Edge>* requests,
 		const int begin,
 		const int end
 	);
@@ -48,6 +52,8 @@ private:
 	bool is_verbose_;
 
 	int thread_number_;
+	std::mutex light_request_mutex_;
+	std::mutex heavy_request_mutex_;
 };
 
 #endif // !CSE305_PROJECT_DELTA_STEP_PARALLEL_H

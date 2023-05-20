@@ -24,8 +24,11 @@ int main(const int argc, char* argv[])
 	const int destination_vertex = strtol(argv[3], nullptr, 10);
 	const int thread_number = strtol(argv[4], nullptr, 10);
 	Graph graph = GraphGenerator::loadGraphs(path)[0];
-	graph.printGraph();
-	graph.printAdjMatrix();
+	if (is_verbose)
+	{
+		graph.printGraph();
+		graph.printAdjMatrix();
+	}
 
 	std::cout << "--------------------------------------------------" << std::endl;
 
@@ -34,11 +37,44 @@ int main(const int argc, char* argv[])
 		std::cerr << "[ERROR] Source vertex is out of bounds" << std::endl;
 		return -1;
 	}
+
 	auto delta_step_par = DeltaStepParallel(graph, source_vertex, thread_number, is_verbose);
+	auto start = std::chrono::high_resolution_clock::now();
 	delta_step_par.solve();
+	auto end = std::chrono::high_resolution_clock::now();
 	delta_step_par.print_solution();
 
-	DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	std::cout << "Solving time for DeltaStepParallel: " << duration.count() << " microseconds" << std::endl;
+
+	start = std::chrono::high_resolution_clock::now();
+	std::vector<double> dijkstra_sol = DijkstraFibonacciHeap::dijkstra(graph, source_vertex, destination_vertex);
+	end = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	std::cout << "Solving time for DijkstraFibonacciHeap: " << duration.count() << " microseconds" << std::endl;
+
+	// Check the correctness of the solution:
+	int is_correct_counter = 0;
+	for (int i = 0; i < graph.getGraphNbVertices(); i++)
+	{
+		if (delta_step_par.get_dist(i) != dijkstra_sol[i])
+		{
+			++is_correct_counter;
+			std::cout << "Delta Step solution is not correct" << std::endl;
+			std::cout << "Vertex " << i << " has distance " << delta_step_par.get_dist(i) << " instead of " << dijkstra_sol[i] << std::endl;
+		}
+	}
+
+	if (is_correct_counter == 0)
+	{
+		std::cout << "Delta Step Parallel solution is correct!" << std::endl;
+	}else
+	{
+		std::cout << "Delta Step solution is not correct for " << is_correct_counter << " value(s)." << std::endl;
+	}
+
+
+
 	return 0;
 }
 

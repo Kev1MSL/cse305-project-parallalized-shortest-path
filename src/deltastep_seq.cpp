@@ -150,10 +150,19 @@ void DeltaStepSequential::relax(Edge selected_edge) {
 
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
-		if (j < i) {
+		//if (j < i) {
+		// Check if i is out of bounds
+		if (i < buckets_.size() && i >= 0)
+		{
 			buckets_[i].erase(to_vertex);
+		}
+		if (j < buckets_.size() && j >= 0)
+		{
 			buckets_[j].insert(to_vertex);
 		}
+			
+			
+		//}
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
 	}

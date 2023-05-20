@@ -16,6 +16,8 @@ public:
     void solve();
     void print_solution();
     void solve_light_heavy();
+	[[nodiscard]] std::vector <double> get_dist() const { return dist_; }
+	[[nodiscard]] double get_dist(const int source) const { return get_dist()[source]; }
 private:
 
 	void compute_light_and_heavy_edges();

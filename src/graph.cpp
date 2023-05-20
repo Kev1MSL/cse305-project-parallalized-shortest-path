@@ -142,7 +142,7 @@ void Graph::printAdjMatrix() {
 		for (size_t j = 0; j < adjMatrix[i].size(); j++) {
 			std::cout << adjMatrix[i][j] << " ";
 		}
-		std::cout << std::endl;
+		std::cout << ',' << std::endl;
 	}
 }
 

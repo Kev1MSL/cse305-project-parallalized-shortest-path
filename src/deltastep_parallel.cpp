@@ -73,8 +73,12 @@ void DeltaStepParallel::relax(Edge selected_edge)
 
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
-		if (j < i) {
+		if (i < buckets_.size() && i >= 0)
+		{
 			buckets_[i].erase(to_vertex);
+		}
+		if (j < buckets_.size() && j >= 0)
+		{
 			buckets_[j].insert(to_vertex);
 		}
 		dist_[to_vertex] = tentative_dist;
@@ -131,42 +135,47 @@ void DeltaStepParallel::find_bucket_requests(std::vector<Edge>* light_requests,
 {
 	while (begin != end)
 	{
+		
 		buckets_[bucket_counter_].erase(*begin);
 		if (is_verbose_)
 		{
 			std::cout << "Erased " << *begin << " from bucket " << bucket_counter_ << std::endl;
 			this->print_bucket(bucket_counter_);
 		}
-
+		// BUG? Sometimes it seems that there is a deadlock, since it is the only function that uses the mutex it should come from here...
+		// Add light requests
 		for (const int l_edge_vertex_id : light_edges_[*begin])
 		{
+			light_request_mutex_.lock();
 			light_requests->emplace_back(
 				*begin,
 				l_edge_vertex_id,
 				graph_.getEdgeWeight(*begin, l_edge_vertex_id)
 			);
+			light_request_mutex_.unlock();
 		}
 
+		// Add heavy requests
 		for (const int h_edge_vertex_id : heavy_edges_[*begin])
 		{
+			heavy_request_mutex_.lock();
 			heavy_requests->emplace_back(
 				*begin,
 				h_edge_vertex_id,
 				graph_.getEdgeWeight(*begin, h_edge_vertex_id)
 			);
+			heavy_request_mutex_.unlock();
 		}
 		++begin;
 	}
 }
 
-void DeltaStepParallel::resolve_requests(std::vector<Edge>* requests, const int begin, const int end)
+void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, const int begin, const int end)
 {
 	for (int i = begin; i < end; i++)
 	{
 		this->relax((*requests)[i]);
 	}
-
-	requests->erase(requests->begin() + begin, requests->begin() + end);
 }
 
 
@@ -248,6 +257,7 @@ void DeltaStepParallel::solve()
 				{
 					worker.join();
 				}
+				light_requests.clear();
 
 			}
 
@@ -286,6 +296,7 @@ void DeltaStepParallel::solve()
 			{
 				worker.join();
 			}
+			heavy_requests.clear();
 		}
 
 		bucket_counter_++;

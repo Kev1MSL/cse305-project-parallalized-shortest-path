@@ -8,7 +8,6 @@
 #include <iostream>
 #include <boost/heap/fibonacci_heap.hpp> // Include the fibonacci heap library
 
-#define INF std::numeric_limits<int>::max()
 // Dijkstra's algorithm sequentially with fibonacci heap
 
 //custom comparator for fibonacci heap
@@ -37,9 +36,9 @@ public:
  * @param source Source vertex.
  * @param destination Destination vertex.
  */
-    static void dijkstra(Graph graph, int source, int destination) {
+    static std::vector<double> dijkstra(Graph graph, const int source, const int destination) {
         // Initialize the distance array:
-        std::vector<double> distance(graph.getGraphNbVertices(), INF);
+        std::vector<double> distance(graph.getGraphNbVertices(), std::numeric_limits<double>::infinity());
 
         // Initialize the fibonacci heap:
         boost::heap::fibonacci_heap<std::pair<int, int>, boost::heap::compare<CustomComparator>> heap;
@@ -84,6 +83,8 @@ public:
         for (int i = 0; i < graph.getGraphNbVertices(); i++) {
             std::cout << "Distance from " << source << " to " << i << ": " << distance[i] << std::endl;
         }
+
+        return distance;
     }
 };
 #endif // CSE305_PROJECT_SEQ_SHORTEST_PATH_H
