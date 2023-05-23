@@ -1,4 +1,5 @@
 #include "deltastep_parallel.h"
+#include <mutex>
 
 DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const int thread_number, bool is_verbose)
 {
@@ -68,26 +69,24 @@ void DeltaStepParallel::relax(Edge selected_edge)
 	const int from_vertex = selected_edge.get_from();
 	const int to_vertex = selected_edge.get_to();
 	const double edge_weight = selected_edge.get_weight();
+
+	// Lock for relax bucket, because the buckets_ list might be modified (especially the size) and dist_[to_vertex] might be tempered with
+	std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
 	const double tentative_dist = dist_[from_vertex] + edge_weight;
 	if (tentative_dist < dist_[to_vertex]) {
 
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
-		//std::lock_guard<std::mutex> lock(relax_bucket_erase_mutex);
-		relax_bucket_erase_mutex.lock();
+
 		if (i < buckets_.size() && i >= 0)
 		{
-			//std::lock_guard<std::mutex> lock(relax_bucket_erase_mutex);
 			buckets_[i].erase(to_vertex);
-			
 		}
 		if (j < buckets_.size() && j >= 0)
 		{
-			//std::lock_guard<std::mutex> lock(relax_bucket_insert_mutex);
 			buckets_[j].insert(to_vertex);
-			
 		}
-		relax_bucket_erase_mutex.unlock();
+
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
 	}
@@ -142,15 +141,17 @@ void DeltaStepParallel::find_bucket_requests(std::vector<Edge>* light_requests,
 {
 	while (begin != end)
 	{
-		erase_bucket_mutex.lock();
+		// Erase the vertex from the bucket in a thread-safe manner, because erase() changes the size of the set, otherwise create segfaults
+		erase_bucket_mutex_.lock();
 		buckets_[bucket_counter_].erase(*begin);
-		erase_bucket_mutex.unlock();
+		erase_bucket_mutex_.unlock();
+
 		if (is_verbose_)
 		{
 			std::cout << "Erased " << *begin << " from bucket " << bucket_counter_ << std::endl;
 			this->print_bucket(bucket_counter_);
 		}
-		// BUG? Sometimes it seems that there is a deadlock, since it is the only function that uses the mutex it should come from here...
+
 		// Add light requests
 		for (const int l_edge_vertex_id : light_edges_[*begin])
 		{
@@ -216,8 +217,6 @@ void DeltaStepParallel::solve()
 
 			for (size_t i = 0; i < req_threads - 1; i++)
 			{
-				try
-				{
 					auto end = start_block;
 					std::advance(end, bucket_chunk_size);
 					find_request_workers[i] = std::thread(
@@ -229,11 +228,6 @@ void DeltaStepParallel::solve()
 						end
 					);
 					start_block = end;
-				}
-				catch (const std::exception& e)
-				{
-					std::cout << e.what() << std::endl;
-				}
 			}
 			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end());
 			for (auto& worker : find_request_workers)

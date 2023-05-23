@@ -58,3 +58,5 @@ build
 /CMakeSettings.json
 /Makefile
 /seq_shortest_path
+cmake-build-debug
+.cache

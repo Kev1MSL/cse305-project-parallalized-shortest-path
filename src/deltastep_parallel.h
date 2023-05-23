@@ -54,9 +54,8 @@ private:
 	int thread_number_;
 	std::mutex light_request_mutex_;
 	std::mutex heavy_request_mutex_;
-	std::mutex relax_bucket_erase_mutex;
-	std::mutex relax_bucket_insert_mutex;
-	std::mutex erase_bucket_mutex;
+	std::mutex relax_bucket_mutex_;
+	std::mutex erase_bucket_mutex_;
 };
 
 #endif // !CSE305_PROJECT_DELTA_STEP_PARALLEL_H
