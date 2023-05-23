@@ -77,7 +77,7 @@ int main(const int argc, char* argv[]) {
 		{
 			++is_correct_counter;
 			std::cout << "Delta Step solution is not correct" << std::endl;
-			std::cout << "Vertex " << i << " has distance " << delta_step_seq.get_dist(i) << " instead of " << dijkstra_sol[i] << std::endl;
+			std::cout << "Vertex " << i << " has distance " << delta_step_seq_lh.get_dist(i) << " instead of " << dijkstra_sol[i] << std::endl;
 		}
 	}
 
