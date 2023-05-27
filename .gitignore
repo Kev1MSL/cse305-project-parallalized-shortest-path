@@ -60,3 +60,4 @@ build
 /seq_shortest_path
 cmake-build-debug
 .cache
+/Folder.DotSettings.user

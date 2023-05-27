@@ -17,9 +17,38 @@ set(CMAKE_CXX_STANDARD 20)
 # src/graph.h
 #         )
 
-add_executable(graph_gen test_generate_graph.cpp src/graph_gen.cpp src/graph_gen.h src/graph.cpp src/graph.h)
-add_executable(seq_shortest_path src/seq_shortest_path.h src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h src/deltastep_seq.cpp src/deltastep_seq.h test_seq_shortest_path.cpp)
-add_executable(parallel_shortest_path src/seq_shortest_path.h src/graph_gen.h src/graph_gen.cpp src/graph.cpp src/graph.h src/deltastep_parallel.cpp src/deltastep_parallel.h test_parallel_shortest_path.cpp)
+add_executable(
+	graph_gen 
+	test_generate_graph.cpp
+	src/graph_gen.cpp
+	src/graph_gen.h
+	src/graph.cpp
+	src/graph.h
+)
+add_executable(
+	seq_shortest_path
+	src/seq_shortest_path.h 
+	src/graph_gen.h 
+	src/graph_gen.cpp 
+	src/graph.cpp 
+	src/graph.h
+	src/deltastep_seq.cpp 
+	src/deltastep_seq.h
+	test_seq_shortest_path.cpp
+)
+add_executable(
+	parallel_shortest_path 
+	src/seq_shortest_path.h
+	src/graph_gen.h 
+	src/graph_gen.cpp
+	src/graph.cpp
+	src/graph.h
+	src/deltastep_parallel.cpp 
+	src/deltastep_parallel.h 
+	test_parallel_shortest_path.cpp 
+	src/monotonic_lock_free_set.cpp 
+	src/monotonic_lock_free_set.h
+)
 
 target_link_libraries(seq_shortest_path ${Boost_LIBRARIES})
 target_link_libraries(parallel_shortest_path ${Boost_LIBRARIES})
