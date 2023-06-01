@@ -41,7 +41,7 @@ private:
 	double delta_;
 	std::vector<std::vector<int>> light_edges_;
 	std::vector<std::vector<int>> heavy_edges_;
-	std::vector<std::vector<double>> adj_matrix_;
+	//std::vector<std::vector<double>> adj_matrix_;
 	int bucket_counter_ = 0;
 	bool is_verbose_;
 

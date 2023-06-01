@@ -19,7 +19,7 @@ DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const
 	pred_ = std::vector<int>(graph_.getGraphNbVertices(), -1);
 	light_edges_ = std::vector<std::vector<int>>(graph_.getGraphNbVertices(), std::vector<int>());
 	heavy_edges_ = std::vector<std::vector<int>>(graph_.getGraphNbVertices(), std::vector<int>());
-	adj_matrix_ = graph_.getAdjMatrix();
+
 	this->compute_light_and_heavy_edges();
 	const int bucket_size = static_cast<int> (graph_.getGraphNbVertices() / delta_) + 1;
 	buckets_.resize(bucket_size);
@@ -45,21 +45,15 @@ DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const
 
 void DeltaStepParallel::compute_light_and_heavy_edges()
 {
-	for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+	for (const Edge& edge : graph_.getEdges())
 	{
-		for (int j = 0; j < graph_.getGraphNbVertices(); j++)
+		if (edge.get_weight() <= delta_)
 		{
-			if (adj_matrix_[i][j] != 0.)
-			{
-				if (adj_matrix_[i][j] <= delta_)
-				{
-					light_edges_[i].push_back(j);
-				}
-				else
-				{
-					heavy_edges_[i].push_back(j);
-				}
-			}
+			light_edges_[edge.get_from()].push_back(edge.get_to());
+		}
+		else
+		{
+			heavy_edges_[edge.get_from()].push_back(edge.get_to());
 		}
 	}
 }
@@ -217,17 +211,17 @@ void DeltaStepParallel::solve()
 
 			for (size_t i = 0; i < req_threads - 1; i++)
 			{
-					auto end = start_block;
-					std::advance(end, bucket_chunk_size);
-					find_request_workers[i] = std::thread(
-						&DeltaStepParallel::find_bucket_requests,
-						this,
-						&light_requests,
-						&heavy_requests,
-						start_block,
-						end
-					);
-					start_block = end;
+				auto end = start_block;
+				std::advance(end, bucket_chunk_size);
+				find_request_workers[i] = std::thread(
+					&DeltaStepParallel::find_bucket_requests,
+					this,
+					&light_requests,
+					&heavy_requests,
+					start_block,
+					end
+				);
+				start_block = end;
 			}
 			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end());
 			for (auto& worker : find_request_workers)

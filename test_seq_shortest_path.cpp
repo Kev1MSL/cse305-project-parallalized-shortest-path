@@ -31,7 +31,7 @@ int main(const int argc, char* argv[]) {
 	if (is_verbose)
 	{
 		graph.printGraph();
-		graph.printAdjMatrix();
+		graph.printAdjList();
 	}
 
 
@@ -43,23 +43,23 @@ int main(const int argc, char* argv[]) {
 		return -1;
 	}
 
-	auto delta_step_seq = DeltaStepSequential(graph, source_vertex, is_verbose);
-	auto start = std::chrono::high_resolution_clock::now();
-	delta_step_seq.solve();
-	auto end = std::chrono::high_resolution_clock::now();
-	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-	std::cout << std::endl << "Basic Delta Step solution: " << std::endl;
-	delta_step_seq.print_solution();
-	std::cout << "Solving time for Basic Delta Step Sequential: " << duration.count() << " microseconds" << std::endl;
+	//auto delta_step_seq = DeltaStepSequential(graph, source_vertex, is_verbose);
+	//auto start = std::chrono::high_resolution_clock::now();
+	//delta_step_seq.solve();
+	//auto end = std::chrono::high_resolution_clock::now();
+	//auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	//std::cout << std::endl << "Basic Delta Step solution: " << std::endl;
+	//delta_step_seq.print_solution();
+	//std::cout << "Solving time for Basic Delta Step Sequential: " << duration.count() << " microseconds" << std::endl;
 
 	auto delta_step_seq_lh = DeltaStepSequential(graph, source_vertex);
-	start = std::chrono::high_resolution_clock::now();
+	auto start = std::chrono::high_resolution_clock::now();
 	delta_step_seq_lh.solve_light_heavy();
-	end = std::chrono::high_resolution_clock::now();
-	duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
-	std::cout << std::endl << "Light Heavy Delta Step solution: " << std::endl;
-	delta_step_seq_lh.print_solution();
+	//std::cout << std::endl << "Light Heavy Delta Step solution: " << std::endl;
+	//delta_step_seq_lh.print_solution();
 	std::cout << "Solving time for Light Heavy Delta Step Sequential: " << duration.count() << " microseconds" << std::endl;
 
 	start = std::chrono::high_resolution_clock::now();

@@ -27,7 +27,7 @@ int main(const int argc, char* argv[])
 	if (is_verbose)
 	{
 		graph.printGraph();
-		graph.printAdjMatrix();
+		graph.printAdjList();
 	}else
 	{
 		graph.print_graph_info();
@@ -45,7 +45,7 @@ int main(const int argc, char* argv[])
 	auto start = std::chrono::high_resolution_clock::now();
 	delta_step_par.solve();
 	auto end = std::chrono::high_resolution_clock::now();
-	delta_step_par.print_solution();
+	//delta_step_par.print_solution();
 
 	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 	std::cout << "Solving time for DeltaStepParallel: " << duration.count() << " microseconds" << std::endl;

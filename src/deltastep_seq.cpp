@@ -21,7 +21,7 @@ DeltaStepSequential::DeltaStepSequential(const Graph& graph, const int source, c
 	light_edges_ = std::vector<std::vector<int>>(graph_.getGraphNbVertices(), std::vector<int>());
 	heavy_edges_ = std::vector<std::vector<int>>(graph_.getGraphNbVertices(), std::vector<int>());
 
-	adj_matrix_ = graph_.getAdjMatrix();
+	/*adj_matrix_ = graph_.getAdjMatrix();*/
 	this->compute_light_and_heavy_edges();
 
 	const int bucket_size = static_cast<int> (graph_.getGraphNbVertices() / delta_) + 1;
@@ -53,23 +53,46 @@ DeltaStepSequential::DeltaStepSequential(const Graph& graph, const int source, c
 
 void DeltaStepSequential::compute_light_and_heavy_edges()
 {
-	for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+	for (const Edge& edge : graph_.getEdges())
 	{
-		for (int j = 0; j < graph_.getGraphNbVertices(); j++)
+		if (edge.get_weight() <= delta_)
 		{
-			if (adj_matrix_[i][j] != 0.)
-			{
-				if (adj_matrix_[i][j] <= delta_)
-				{
-					light_edges_[i].push_back(j);
-				}
-				else
-				{
-					heavy_edges_[i].push_back(j);
-				}
-			}
+			light_edges_[edge.get_from()].push_back(edge.get_to());
+		}
+		else
+		{
+			heavy_edges_[edge.get_from()].push_back(edge.get_to());
 		}
 	}
+	//for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+	//{
+	//	for (int j = 0; j < graph_.getGraphNbVertices(); j++)
+	//	{
+	//		const double edge_weight = graph_.getEdgeWeight(i, j);
+	//		if (edge_weight != 0.)
+	//		{
+	//			if (edge_weight <= delta_)
+	//			{
+	//				light_edges_[i].push_back(j);
+	//			}
+	//			else
+	//			{
+	//				heavy_edges_[i].push_back(j);
+	//			}
+	//		}
+	//		/*if (adj_matrix_[i][j] != 0.)
+	//		{
+	//			if (adj_matrix_[i][j] <= delta_)
+	//			{
+	//				light_edges_[i].push_back(j);
+	//			}
+	//			else
+	//			{
+	//				heavy_edges_[i].push_back(j);
+	//			}
+	//		}*/
+	//	}
+	//}
 }
 
 void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std::vector<Edge>* light_requests, std::vector<Edge>* heavy_requests)
@@ -83,19 +106,27 @@ void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std:
 			this->print_bucket(bucket_counter_);
 		}
 
-		const std::set<int> vertex_neighbors = graph_.get_vertex_neighbors(vertex_id);
-		for (const int neighbor_vertex : vertex_neighbors)
+		// Add light requests
+		for (const int l_edge_vertex_id : light_edges_[vertex_id])
 		{
-			if (adj_matrix_[vertex_id][neighbor_vertex] <= delta_)
-			{
-				light_requests->emplace_back(vertex_id, neighbor_vertex,
-					graph_.getEdgeWeight(vertex_id, neighbor_vertex));
-			}
-			else
-			{
-				heavy_requests->emplace_back(vertex_id, neighbor_vertex,
-					graph_.getEdgeWeight(vertex_id, neighbor_vertex));
-			}
+
+			light_requests->emplace_back(
+				vertex_id,
+				l_edge_vertex_id,
+				graph_.getEdgeWeight(vertex_id, l_edge_vertex_id)
+			);
+
+		}
+
+		// Add heavy requests
+		for (const int h_edge_vertex_id : heavy_edges_[vertex_id])
+		{
+
+			heavy_requests->emplace_back(
+				vertex_id,
+				h_edge_vertex_id,
+				graph_.getEdgeWeight(vertex_id, h_edge_vertex_id)
+			);
 		}
 	}
 }
@@ -160,8 +191,8 @@ void DeltaStepSequential::relax(Edge selected_edge) {
 		{
 			buckets_[j].insert(to_vertex);
 		}
-			
-			
+
+
 		//}
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;

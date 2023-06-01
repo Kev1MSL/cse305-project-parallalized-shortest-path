@@ -2,15 +2,18 @@
 
 
 
-int Edge::get_from() {
+int Edge::get_from() const
+{
 	return from_vertex_;
 }
 
-int Edge::get_to() {
+int Edge::get_to() const
+{
 	return to_vertex_;
 }
 
-double Edge::get_weight() {
+double Edge::get_weight() const
+{
 	return edge_weight_;
 }
 
@@ -59,6 +62,7 @@ Graph::Graph(int _nbVertices, int _nbEdges) {
 
 	computeDegrees();
 	createAdjList();
+	//createAdjMatrix();
 }
 
 int Graph::getGraphNbEdges() {
@@ -114,35 +118,71 @@ void Graph::computeDegrees() {
 }
 
 
-void Graph::createAdjList() {
-	//create adjacency list
-	//iterate through edges
-	adjMatrix = std::vector<std::vector<double>>(nbVertices, std::vector<double>(nbVertices, 0));
+//void Graph::createAdjMatrix() {
+//	adjMatrix = std::vector<std::vector<double>>(nbVertices, std::vector<double>(nbVertices, 0));
+//
+//	for (size_t i = 0; i < edges.size(); i++) {
+//		adjMatrix[edges[i].get_from()][edges[i].get_to()] = edges[i].get_weight();
+//
+//	}
+//}
 
-	for (size_t i = 0; i < edges.size(); i++) {
-		adjMatrix[edges[i].get_from()][edges[i].get_to()] = edges[i].get_weight();
+void Graph::createAdjList()
+{
+	// Initialize the adjacency list
+	this->adjList = std::map<int, std::vector<std::pair<int, double>>>();
 
+	// Add the edges to the adjacency list
+	for (const Edge& edge : this->edges)
+	{
+		adjList[edge.get_from()].push_back(std::make_pair(edge.get_to(), edge.get_weight()));
 	}
+
 }
 
-std::vector<std::vector<double>> Graph::getAdjMatrix() {
-	return adjMatrix;
-}
-double Graph::getEdgeWeight(int v1, int v2) {
-	return adjMatrix[v1][v2];
+//std::vector<std::vector<double>> Graph::getAdjMatrix() {
+//	return adjMatrix;
+//}
+double Graph::getEdgeWeight(const int from, const int to) const
+{
+	if (adjList.contains(from))
+	{
+		const auto it = std::ranges::find_if(adjList.at(from), [to](const std::pair<int, double>& p) {return p.first == to; });
+		if (it != adjList.at(from).end())
+		{
+			return it->second;
+		}
+	}
+	return 0.;
+	// If we are sure that the edge exists, we can use the following line instead of the above code:
+	// return adjList[from][to];
 }
 
 bool Graph::areNeighbors(int v1, int v2) {
-	return Graph::getEdgeWeight(v1, v2) != 0;
+	return Graph::getEdgeWeight(v1, v2) != 0.;
 }
 
-void Graph::printAdjMatrix() {
-	printf("Adjacency Matrix:\n");
-	for (size_t i = 0; i < adjMatrix.size(); i++) {
-		for (size_t j = 0; j < adjMatrix[i].size(); j++) {
-			std::cout << adjMatrix[i][j] << " ";
+//void Graph::printAdjMatrix() {
+//	printf("Adjacency Matrix:\n");
+//	for (size_t i = 0; i < adjMatrix.size(); i++) {
+//		for (size_t j = 0; j < adjMatrix[i].size(); j++) {
+//			std::cout << adjMatrix[i][j] << " ";
+//		}
+//		std::cout << ',' << std::endl;
+//	}
+//}
+
+void Graph::printAdjList()
+{
+	std::cout << "Adjacency List:" << std::endl;
+	for (const std::pair<int, std::vector<std::pair<int, double>>> p : adjList)
+	{
+		std::cout << p.first << ": ";
+		for (const std::pair<int, double>& p2 : p.second)
+		{
+			std::cout << p2.first << " ";
 		}
-		std::cout << ',' << std::endl;
+		std::cout << std::endl;
 	}
 }
 
@@ -152,13 +192,23 @@ std::vector<int> Graph::getGraphDegrees() {
 
 
 std::set<int> Graph::get_vertex_neighbors(int v) {
-	std::set<int> neighbours;
+	/*std::set<int> neighbours;
 	for (size_t i = 0; i < adjMatrix[v].size(); i++) {
 		if (adjMatrix[v][i] != 0) {
 			neighbours.insert(i);
 		}
 	}
-	return neighbours;
+	return neighbours;*/
+
+	std::set<int> neighbors;
+	if (adjList.contains(v))
+	{
+		for (const std::pair<int, double>& p : adjList.at(v))
+		{
+			neighbors.insert(p.first);
+		}
+	}
+	return neighbors;
 }
 
 void Graph::computeMaxDegree() {
