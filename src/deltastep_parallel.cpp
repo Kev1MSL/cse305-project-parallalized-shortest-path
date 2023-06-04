@@ -23,6 +23,8 @@ DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const
 	this->compute_light_and_heavy_edges();
 	const int bucket_size = static_cast<int> (graph_.getGraphNbVertices() / delta_) + 1;
 	buckets_.resize(bucket_size);
+	//create an array of bucket modification locks
+	std::vector<std::mutex> bucket_modification_mutexes_ = std::vector<std::mutex>(bucket_size);
 	if (is_verbose_)
 		std::cout << "Bucket size: " << bucket_size << std::endl;
 	for (int i = 0; i < graph_.getGraphNbVertices(); i++)
@@ -68,18 +70,22 @@ void DeltaStepParallel::relax(Edge selected_edge)
 	//std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
 	const double tentative_dist = dist_[from_vertex] + edge_weight;
 	if (tentative_dist < dist_[to_vertex]) {
-
+		
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
+
+		relax_bucket_mutex_.lock();
 
 		if (i < buckets_.size() && i >= 0)
 		{
 			buckets_[i].erase(to_vertex);
 		}
 		if (j < buckets_.size() && j >= 0)
-		{
-			buckets_[j].insert(to_vertex);
+		{	
+			buckets_[j].insert(to_vertex);	
 		}
+
+		relax_bucket_mutex_.unlock();
 
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
@@ -311,7 +317,6 @@ void DeltaStepParallel::solve()
 				heavy_requests[i].clear();
 			}
 		}
-
 		bucket_counter_++;
 		while (bucket_counter_ < graph_.getGraphNbVertices() && buckets_[bucket_counter_].empty()) {
 			bucket_counter_++;

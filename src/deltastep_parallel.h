@@ -56,6 +56,11 @@ private:
 	std::mutex heavy_request_mutex_;
 	std::mutex relax_bucket_mutex_;
 	std::mutex erase_bucket_mutex_;
+
+	std::mutex relax_delete_node_mutex_;
+	std::mutex relax_add_node_mutex_;
+
+	std::vector<std::mutex> bucket_modification_mutexes_;
 };
 
 #endif // !CSE305_PROJECT_DELTA_STEP_PARALLEL_H

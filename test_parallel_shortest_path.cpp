@@ -5,26 +5,26 @@
 
 int main(const int argc, char* argv[])
 {
-	if (argc < 5) {
-		std::cerr << "Usage: ./parallel_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex> <thread_number>" << std::endl;
-		return -1;
-	}
-	bool is_verbose = false;
-	if (argc == 6)
-	{
-		if (strcmp(argv[5], "-v") == 0)
-		{
-			is_verbose = true;
-		}
-	}
+	// if (argc < 5) {
+	// 	std::cerr << "Usage: ./parallel_shortest_path <path_to_graph_file> <source_vertex> <destination_vertex> <thread_number>" << std::endl;
+	// 	return -1;
+	// }
+	// bool is_verbose = false;
+	// if (argc == 6)
+	// {
+	// 	if (strcmp(argv[5], "-v") == 0)
+	// 	{
+	// 		is_verbose = true;
+	// 	}
+	// }
 
 	// Get the arguments
-	const std::string path = argv[1];
-	const int source_vertex = strtol(argv[2], nullptr, 10);
-	const int destination_vertex = strtol(argv[3], nullptr, 10);
-	const int thread_number = strtol(argv[4], nullptr, 10);
+	const std::string path = "test.txt";
+	const int source_vertex = 0;
+	const int destination_vertex = 2;
+	const int thread_number = 8;
 	Graph graph = GraphGenerator::loadGraphs(path)[0];
-	if (is_verbose)
+	if (true)
 	{
 		graph.printGraph();
 		graph.printAdjList();
@@ -41,7 +41,7 @@ int main(const int argc, char* argv[])
 		return -1;
 	}
 
-	auto delta_step_par = DeltaStepParallel(graph, source_vertex, thread_number, is_verbose);
+	auto delta_step_par = DeltaStepParallel(graph, source_vertex, thread_number, false);
 	auto start = std::chrono::high_resolution_clock::now();
 	delta_step_par.solve();
 	auto end = std::chrono::high_resolution_clock::now();
