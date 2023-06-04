@@ -60,3 +60,11 @@ build
 /seq_shortest_path
 cmake-build-debug
 .cache
+.ninja_deps
+.ninja_log
+.gitignore
+.gitignore
+parallel_shortest_path
+parallel_shortest_paths
+.cmake
+build.ninja
