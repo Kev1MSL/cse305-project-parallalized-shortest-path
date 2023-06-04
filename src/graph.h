@@ -6,6 +6,8 @@
 #include <set>
 #include <random>
 #include <map>
+#include <algorithm>
+#include <iterator>
 /**
  * Class representing an edge in the graph.
  */

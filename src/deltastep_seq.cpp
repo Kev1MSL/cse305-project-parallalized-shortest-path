@@ -64,38 +64,9 @@ void DeltaStepSequential::compute_light_and_heavy_edges()
 			heavy_edges_[edge.get_from()].push_back(edge.get_to());
 		}
 	}
-	//for (int i = 0; i < graph_.getGraphNbVertices(); i++)
-	//{
-	//	for (int j = 0; j < graph_.getGraphNbVertices(); j++)
-	//	{
-	//		const double edge_weight = graph_.getEdgeWeight(i, j);
-	//		if (edge_weight != 0.)
-	//		{
-	//			if (edge_weight <= delta_)
-	//			{
-	//				light_edges_[i].push_back(j);
-	//			}
-	//			else
-	//			{
-	//				heavy_edges_[i].push_back(j);
-	//			}
-	//		}
-	//		/*if (adj_matrix_[i][j] != 0.)
-	//		{
-	//			if (adj_matrix_[i][j] <= delta_)
-	//			{
-	//				light_edges_[i].push_back(j);
-	//			}
-	//			else
-	//			{
-	//				heavy_edges_[i].push_back(j);
-	//			}
-	//		}*/
-	//	}
-	//}
 }
 
-void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std::vector<Edge>* light_requests, std::vector<Edge>* heavy_requests)
+void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std::vector<std::vector<Edge>>* light_requests, std::vector<std::vector<Edge>>* heavy_requests)
 {
 	for (const int vertex_id : bucket)
 	{
@@ -109,8 +80,7 @@ void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std:
 		// Add light requests
 		for (const int l_edge_vertex_id : light_edges_[vertex_id])
 		{
-
-			light_requests->emplace_back(
+			light_requests->at(vertex_id).emplace_back(
 				vertex_id,
 				l_edge_vertex_id,
 				graph_.getEdgeWeight(vertex_id, l_edge_vertex_id)
@@ -122,7 +92,7 @@ void DeltaStepSequential::find_bucket_requests(const std::set<int>& bucket, std:
 		for (const int h_edge_vertex_id : heavy_edges_[vertex_id])
 		{
 
-			heavy_requests->emplace_back(
+			heavy_requests->at(vertex_id).emplace_back(
 				vertex_id,
 				h_edge_vertex_id,
 				graph_.getEdgeWeight(vertex_id, h_edge_vertex_id)
@@ -212,6 +182,7 @@ void DeltaStepSequential::resolve_requests(std::vector<Edge>* requests)
 void DeltaStepSequential::solve() {
 	while (bucket_counter_ < buckets_.size())
 	{
+		
 		std::set<int> current_bucket = buckets_[bucket_counter_];
 		while (!current_bucket.empty()) {
 			std::set<int> current_bucket_update;
@@ -240,9 +211,13 @@ void DeltaStepSequential::solve() {
 	}
 }
 void DeltaStepSequential::solve_light_heavy() {
+	std::cout << buckets_.size() << std::endl;
 	while (bucket_counter_ < buckets_.size())
 	{
-		std::vector<Edge> light_requests, heavy_requests;
+		std::cout << "Bucket counter: " << bucket_counter_ << std::endl;
+		std::vector<std::vector<Edge>> light_requests = std::vector<std::vector<Edge>>(graph_.getGraphNbVertices(), std::vector<Edge>());
+		std::vector<std::vector<Edge>> heavy_requests = std::vector<std::vector<Edge>>(graph_.getGraphNbVertices(), std::vector<Edge>());
+
 		std::set<int> current_bucket = buckets_[bucket_counter_];
 		while (!current_bucket.empty()) {
 
@@ -250,14 +225,22 @@ void DeltaStepSequential::solve_light_heavy() {
 			find_bucket_requests(current_bucket, &light_requests, &heavy_requests);
 
 			//Resolve light requests
-			resolve_requests(&light_requests);
+			for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+			{
+				resolve_requests(&light_requests[i]);
+			}
+			
 
 			// Update current bucket
 			current_bucket = buckets_[bucket_counter_];
 		}
 
 		//Resolve Heavy requests
-		resolve_requests(&heavy_requests);
+		for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+		{
+			resolve_requests(&heavy_requests[i]);
+		}
+			
 
 		bucket_counter_++;
 

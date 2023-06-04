@@ -1,7 +1,6 @@
 #include "graph.h"
 
 
-
 int Edge::get_from() const
 {
 	return from_vertex_;
@@ -147,10 +146,13 @@ double Graph::getEdgeWeight(const int from, const int to) const
 {
 	if (adjList.contains(from))
 	{
-		const auto it = std::ranges::find_if(adjList.at(from), [to](const std::pair<int, double>& p) {return p.first == to; });
-		if (it != adjList.at(from).end())
+		//return edge weight
+		for (const std::pair<int, double>& p : adjList.at(from))
 		{
-			return it->second;
+			if (p.first == to)
+			{
+				return p.second;
+			}
 		}
 	}
 	return 0.;
