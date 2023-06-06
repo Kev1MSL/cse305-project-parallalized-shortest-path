@@ -24,6 +24,8 @@ add_executable(parallel_shortest_path src/seq_shortest_path.h src/graph_gen.h sr
 target_link_libraries(seq_shortest_path ${Boost_LIBRARIES})
 target_link_libraries(parallel_shortest_path ${Boost_LIBRARIES})
 
+add_compile_options("-g")
+
 #target_compile_features(graph_gen PUBLIC cxx_std_11)
 #target_compile_features(seq_shortest_path PUBLIC cxx_std_11)
 #target_compile_features(graph_gen PUBLIC)

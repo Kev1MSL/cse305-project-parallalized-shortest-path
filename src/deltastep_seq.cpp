@@ -211,10 +211,8 @@ void DeltaStepSequential::solve() {
 	}
 }
 void DeltaStepSequential::solve_light_heavy() {
-	std::cout << buckets_.size() << std::endl;
 	while (bucket_counter_ < buckets_.size())
 	{
-		std::cout << "Bucket counter: " << bucket_counter_ << std::endl;
 		std::vector<std::vector<Edge>> light_requests = std::vector<std::vector<Edge>>(graph_.getGraphNbVertices(), std::vector<Edge>());
 		std::vector<std::vector<Edge>> heavy_requests = std::vector<std::vector<Edge>>(graph_.getGraphNbVertices(), std::vector<Edge>());
 
