@@ -70,7 +70,9 @@ void DeltaStepParallel::relax(Edge selected_edge)
 	//std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
 	const double tentative_dist = dist_[from_vertex] + edge_weight;
 	if (tentative_dist < dist_[to_vertex]) {
+
 		
+
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
 		if (i < buckets_.size() && i >= 0)
@@ -85,7 +87,7 @@ void DeltaStepParallel::relax(Edge selected_edge)
 			buckets_[j].insert(to_vertex);
 		}
 
-		relax_bucket_mutex_.unlock();
+		/*relax_bucket_mutex_.unlock();*/
 
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
