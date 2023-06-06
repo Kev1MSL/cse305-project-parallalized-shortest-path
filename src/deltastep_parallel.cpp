@@ -303,7 +303,7 @@ void DeltaStepParallel::solve()
 		}
 
 		bucket_counter_++;
-		while (bucket_counter_ < graph_.getGraphNbVertices() && buckets_[bucket_counter_].empty()) {
+		while (bucket_counter_ < buckets_.size() && buckets_[bucket_counter_].empty()) {
 			bucket_counter_++;
 		}
 	}
