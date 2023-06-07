@@ -52,6 +52,8 @@ int main(const int argc, char* argv[]) {
 	//delta_step_seq.print_solution();
 	//std::cout << "Solving time for Basic Delta Step Sequential: " << duration.count() << " microseconds" << std::endl;
 
+
+
 	auto delta_step_seq_lh = DeltaStepSequential(graph, source_vertex);
 	auto start = std::chrono::high_resolution_clock::now();
 	delta_step_seq_lh.solve_light_heavy();

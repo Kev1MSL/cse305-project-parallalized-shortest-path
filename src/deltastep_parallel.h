@@ -49,7 +49,7 @@ private:
 	std::vector<std::vector<int>> heavy_edges_;
 	
 	int bucket_counter_ = 0;
-	bool is_verbose_;
+	bool is_verbose_ = false;
 
 	int thread_number_;
 	std::mutex light_request_mutex_;

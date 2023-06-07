@@ -169,15 +169,24 @@ void DeltaStepSequential::relax(Edge selected_edge) {
 	}
 }
 
+// void DeltaStepSequential::resolve_requests(std::vector<Edge>* requests)
+// {
+// 	while (!requests->empty())
+// 	{
+// 		const Edge selected_edge = requests->front();
+// 		requests->erase(requests->begin());
+// 		relax(selected_edge);
+// 	}
+// }
 void DeltaStepSequential::resolve_requests(std::vector<Edge>* requests)
 {
-	while (!requests->empty())
+	for (const Edge& request : *requests)
 	{
-		const Edge selected_edge = requests->front();
-		requests->erase(requests->begin());
-		relax(selected_edge);
+		relax(request);
 	}
 }
+
+
 
 void DeltaStepSequential::solve() {
 	while (bucket_counter_ < buckets_.size())
@@ -224,8 +233,13 @@ void DeltaStepSequential::solve_light_heavy() {
 
 			//Resolve light requests
 			for (int i = 0; i < graph_.getGraphNbVertices(); i++)
-			{
-				resolve_requests(&light_requests[i]);
+			{ 	
+				if (!light_requests[i].empty())
+				{
+					resolve_requests(&light_requests[i]);
+					light_requests[i].clear();
+				}
+				
 			}
 			
 
@@ -236,7 +250,11 @@ void DeltaStepSequential::solve_light_heavy() {
 		//Resolve Heavy requests
 		for (int i = 0; i < graph_.getGraphNbVertices(); i++)
 		{
-			resolve_requests(&heavy_requests[i]);
+			if (!heavy_requests[i].empty())
+			{
+				resolve_requests(&heavy_requests[i]);
+				heavy_requests[i].clear();
+			}
 		}
 			
 
