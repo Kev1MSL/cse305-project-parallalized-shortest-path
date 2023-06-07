@@ -70,22 +70,24 @@ void DeltaStepParallel::relax(Edge selected_edge)
 	//std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
 	const double tentative_dist = dist_[from_vertex] + edge_weight;
 	if (tentative_dist < dist_[to_vertex]) {
+
 		
+
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
-
-		relax_bucket_mutex_.lock();
-
 		if (i < buckets_.size() && i >= 0)
 		{
+			std::lock_guard<std::mutex> lock(bucket_mutexes_[i]);
 			buckets_[i].erase(to_vertex);
+
 		}
 		if (j < buckets_.size() && j >= 0)
-		{	
-			buckets_[j].insert(to_vertex);	
+		{
+			std::lock_guard<std::mutex> lock(bucket_mutexes_[j]);
+			buckets_[j].insert(to_vertex);
 		}
 
-		relax_bucket_mutex_.unlock();
+		/*relax_bucket_mutex_.unlock();*/
 
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
@@ -137,7 +139,7 @@ void DeltaStepParallel::print_bucket(const size_t bucket_id) const
 }
 
 void DeltaStepParallel::find_bucket_requests(std::vector<std::vector<Edge>>* light_requests,
-	std::vector<std::vector<Edge>>* heavy_requests, std::set<int>::const_iterator begin, const std::set<int>::const_iterator& end)
+	std::vector<std::vector<Edge>>* heavy_requests, std::set<int>::const_iterator begin, const std::set<int>::const_iterator& end, int& nb_light_requests, int& nb_heavy_requests)
 {
 	while (begin != end)
 	{
@@ -161,6 +163,7 @@ void DeltaStepParallel::find_bucket_requests(std::vector<std::vector<Edge>>* lig
 				l_edge_vertex_id,
 				graph_.getEdgeWeight(*begin, l_edge_vertex_id)
 			);
+			++nb_light_requests;
 			light_request_mutex_.unlock();
 		}
 
@@ -173,6 +176,7 @@ void DeltaStepParallel::find_bucket_requests(std::vector<std::vector<Edge>>* lig
 				h_edge_vertex_id,
 				graph_.getEdgeWeight(*begin, h_edge_vertex_id)
 			);
+			++nb_heavy_requests;
 			heavy_request_mutex_.unlock();
 		}
 		++begin;
@@ -192,10 +196,14 @@ void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, cons
 
 void DeltaStepParallel::solve()
 {
+
+	bucket_mutexes_ = std::vector<std::mutex>(buckets_.size());
 	while (bucket_counter_ < buckets_.size())
 	{
 		std::vector<std::vector<Edge>> light_requests = std::vector<std::vector<Edge>>(graph_.getGraphNbVertices(), std::vector<Edge>());
 		std::vector<std::vector<Edge>> heavy_requests = std::vector<std::vector<Edge>>(graph_.getGraphNbVertices(), std::vector<Edge>());
+		int nb_light_requests = 0;
+		int nb_heavy_requests = 0;
 		std::set<int> current_bucket = buckets_[bucket_counter_];
 		while (!current_bucket.empty())
 		{
@@ -227,98 +235,107 @@ void DeltaStepParallel::solve()
 					&light_requests,
 					&heavy_requests,
 					start_block,
-					end
+					end,
+					std::ref(nb_light_requests),
+					std::ref(nb_heavy_requests)
 				);
 				start_block = end;
 			}
-			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end());
+			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end(), std::ref(nb_light_requests), std::ref(nb_heavy_requests));
 			for (auto& worker : find_request_workers)
 			{
 				worker.join();
 			}
 
 			// Resolve the light requests in parallel
+			if(nb_light_requests > 0)
+			{
+				for (int i = 0; i < graph_.getGraphNbVertices(); i++)
+				{
+					if (!light_requests[i].empty())
+					{
+						size_t req_threads;
+						if (thread_number_ > light_requests[i].size())
+						{
+							req_threads = light_requests[i].size();
+						}
+						else
+						{
+							req_threads = thread_number_;
+						}
+
+						std::vector <std::thread> resolve_light_request_workers(req_threads - 1);
+						const size_t light_request_chunk_size = light_requests[i].size() / req_threads;
+
+						for (size_t j = 0; j < req_threads - 1; j++)
+						{
+							resolve_light_request_workers[j] = std::thread(
+								&DeltaStepParallel::resolve_requests,
+								this,
+								&light_requests[i],
+								j * light_request_chunk_size,
+								(j + 1) * light_request_chunk_size
+							);
+						}
+
+						resolve_requests(&light_requests[i], (req_threads - 1) * light_request_chunk_size, light_requests[i].size());
+
+						for (auto& worker : resolve_light_request_workers)
+						{
+							worker.join();
+						}
+						light_requests[i].clear();
+					}
+				}
+
+			}
 			
+			current_bucket = buckets_[bucket_counter_];
+		}
+		// Resolve the heavy requests in parallel
+		if (nb_heavy_requests > 0)
+		{
 			for (int i = 0; i < graph_.getGraphNbVertices(); i++)
 			{
-				if (!light_requests[i].empty())
+				if (!heavy_requests[i].empty())
 				{
 					size_t req_threads;
-					if (thread_number_ > light_requests[i].size())
+					if (thread_number_ > heavy_requests[i].size())
 					{
-						req_threads = light_requests[i].size();
+						req_threads = heavy_requests[i].size();
 					}
 					else
 					{
 						req_threads = thread_number_;
 					}
 
-					std::vector <std::thread> resolve_light_request_workers(req_threads - 1);
-					const size_t light_request_chunk_size = light_requests[i].size() / req_threads;
+					std::vector <std::thread> resolve_heavy_request_workers(req_threads - 1);
+					const size_t heavy_request_chunk_size = heavy_requests[i].size() / req_threads;
 
 					for (size_t j = 0; j < req_threads - 1; j++)
 					{
-						resolve_light_request_workers[j] = std::thread(
+						resolve_heavy_request_workers[j] = std::thread(
 							&DeltaStepParallel::resolve_requests,
 							this,
-							&light_requests[i],
-							j * light_request_chunk_size,
-							(j + 1) * light_request_chunk_size
+							&heavy_requests[i],
+							j * heavy_request_chunk_size,
+							(j + 1) * heavy_request_chunk_size
 						);
 					}
 
-					resolve_requests(&light_requests[i], (req_threads - 1) * light_request_chunk_size, light_requests[i].size());
+					resolve_requests(&heavy_requests[i], (req_threads - 1) * heavy_request_chunk_size, heavy_requests[i].size());
 
-					for (auto& worker : resolve_light_request_workers)
+					for (auto& worker : resolve_heavy_request_workers)
 					{
 						worker.join();
 					}
-					light_requests[i].clear();
+					heavy_requests[i].clear();
 				}
 			}
 
-			current_bucket = buckets_[bucket_counter_];
-		}
-		// Resolve the heavy requests in parallel
-		for (int i = 0; i < graph_.getGraphNbVertices(); i++)
-		{
-			if (!heavy_requests[i].empty())
-			{
-				size_t req_threads;
-				if (thread_number_ > heavy_requests[i].size())
-				{
-					req_threads = heavy_requests[i].size();
-				}
-				else
-				{
-					req_threads = thread_number_;
-				}
-
-				std::vector <std::thread> resolve_heavy_request_workers(req_threads - 1);
-				const size_t heavy_request_chunk_size = heavy_requests[i].size() / req_threads;
-
-				for (size_t j = 0; j < req_threads - 1; j++)
-				{
-					resolve_heavy_request_workers[j] = std::thread(
-						&DeltaStepParallel::resolve_requests,
-						this,
-						&heavy_requests[i],
-						j * heavy_request_chunk_size,
-						(j + 1) * heavy_request_chunk_size
-					);
-				}
-
-				resolve_requests(&heavy_requests[i], (req_threads - 1) * heavy_request_chunk_size, heavy_requests[i].size());
-
-				for (auto& worker : resolve_heavy_request_workers)
-				{
-					worker.join();
-				}
-				heavy_requests[i].clear();
-			}
 		}
 		bucket_counter_++;
-		while (bucket_counter_ < graph_.getGraphNbVertices() && buckets_[bucket_counter_].empty()) {
+		while (bucket_counter_ < buckets_.size() && buckets_[bucket_counter_].empty() == true) {
 			bucket_counter_++;
 		}
 	}

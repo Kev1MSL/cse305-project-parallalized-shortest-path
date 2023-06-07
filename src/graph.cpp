@@ -226,12 +226,12 @@ void Graph::print_graph_info() const
 {
 	std::cout << "Graph " << nbVertices << ", Vertices " << nbVertices << ", Edges " << nbEdges << std::endl;
 	std::cout << "Max degree: " << maxDegree << std::endl;
-	std::cout << "Degrees: ";
-	for (int i = 0; i < nbVertices; i++)
-	{
-		std::cout << degrees[i] << " ";
-	}
-	std::cout << std::endl;
+	//std::cout << "Degrees: ";
+	//for (int i = 0; i < nbVertices; i++)
+	//{
+	//	std::cout << degrees[i] << " ";
+	//}
+	//std::cout << std::endl;
 	/*std::cout << "Adjacency Matrix:" << std::endl;
 	for (int i = 0; i < nbVertices; i++)
 	{

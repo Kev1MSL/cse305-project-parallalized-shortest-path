@@ -26,7 +26,9 @@ private:
 		std::vector<std::vector<Edge>>* light_requests,
 		std::vector<std::vector<Edge>>* heavy_requests,
 		std::set<int>::const_iterator begin, 
-		const std::set<int>::const_iterator& end);
+		const std::set<int>::const_iterator& end,
+		int &nb_light_requests, int &nb_heavy_requests
+	);
 	void resolve_requests(
 		const std::vector<Edge>* requests,
 		const size_t begin,
@@ -56,11 +58,7 @@ private:
 	std::mutex heavy_request_mutex_;
 	std::mutex relax_bucket_mutex_;
 	std::mutex erase_bucket_mutex_;
-
-	std::mutex relax_delete_node_mutex_;
-	std::mutex relax_add_node_mutex_;
-
-	std::vector<std::mutex> bucket_modification_mutexes_;
+	std::vector<std::mutex> bucket_mutexes_;
 };
 
 #endif // !CSE305_PROJECT_DELTA_STEP_PARALLEL_H
