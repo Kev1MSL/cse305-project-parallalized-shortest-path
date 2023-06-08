@@ -5,7 +5,9 @@ DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const
 {
 	graph_ = graph;
 	source_ = source;
-	delta_ = 1 / (static_cast<double>(graph_.getMaxDegree()) + 1);
+	
+	delta_ = (static_cast<double>(graph_.getMaxDegree()) + 1);
+	printf("Delta: %f\n", delta_);
 	is_verbose_ = is_verbose;
 	thread_number_ = thread_number;
 
@@ -24,7 +26,7 @@ DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const
 	const int bucket_size = static_cast<int> (graph_.getGraphNbVertices() / delta_) + 1;
 	buckets_.resize(bucket_size);
 	//create an array of bucket modification locks
-	std::vector<std::mutex> bucket_modification_mutexes_ = std::vector<std::mutex>(bucket_size);
+	// std::vector<std::mutex> bucket_modification_mutexes_ = std::vector<std::mutex>(bucket_size);
 	if (is_verbose_)
 		std::cout << "Bucket size: " << bucket_size << std::endl;
 	for (int i = 0; i < graph_.getGraphNbVertices(); i++)
