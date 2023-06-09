@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     int m = atoi(argv[2]);
     int numGraphs = atoi(argv[3]);
     std::string filename = argv[4];
-    GraphGenerator::generateSaveGraphs(n, m, numGraphs, "graph.txt");
+    GraphGenerator::generateSaveGraphs(n, m, numGraphs, filename);
     return 0;
 
 }

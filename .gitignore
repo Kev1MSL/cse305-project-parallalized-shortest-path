@@ -54,3 +54,9 @@ graph_gen
 
 build
 .vscode
+.vs
+/CMakeSettings.json
+/Makefile
+/seq_shortest_path
+cmake-build-debug
+.cache
