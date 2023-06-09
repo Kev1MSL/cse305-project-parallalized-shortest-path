@@ -27,6 +27,43 @@ private:
 		std::vector<Edge>* heavy_requests,
 		std::set<int>::const_iterator begin, 
 		const std::set<int>::const_iterator& end);
+
+	void find_bucket_requests_seq(const std::set<int>& bucket, std::vector<Edge>* light_requests, std::vector<Edge>* heavy_requests)
+{
+	for (const int vertex_id : bucket)
+	{
+		buckets_[bucket_counter_].erase(vertex_id);
+		if (is_verbose_)
+		{
+			std::cout << "Erased " << vertex_id << " from bucket " << bucket_counter_ << std::endl;
+			this->print_bucket(bucket_counter_);
+		}
+
+		// Add light requests
+		for (const int l_edge_vertex_id : light_edges_[vertex_id])
+		{
+
+			light_requests->emplace_back(
+				vertex_id,
+				l_edge_vertex_id,
+				graph_.getEdgeWeight(vertex_id, l_edge_vertex_id)
+			);
+
+		}
+
+		// Add heavy requests
+		for (const int h_edge_vertex_id : heavy_edges_[vertex_id])
+		{
+
+			heavy_requests->emplace_back(
+				vertex_id,
+				h_edge_vertex_id,
+				graph_.getEdgeWeight(vertex_id, h_edge_vertex_id)
+			);
+		}
+	}
+}
+
 	void resolve_requests(
 		const std::vector<Edge>* requests,
 		const size_t begin,

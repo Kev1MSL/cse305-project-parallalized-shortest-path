@@ -21,7 +21,7 @@ public:
 private:
 
 	void compute_light_and_heavy_edges();
-	void find_bucket_requests(const std::set<int>& bucket, std::vector<std::vector<Edge>>* light_requests, std::vector<std::vector<Edge>>* heavy_requests);
+	void find_bucket_requests(const std::set<int>& bucket, std::vector<Edge>* light_requests, std::vector<Edge>* heavy_requests);
 	void relax(Edge selected_edge);
 	void resolve_requests(std::vector<Edge>* requests);
 
