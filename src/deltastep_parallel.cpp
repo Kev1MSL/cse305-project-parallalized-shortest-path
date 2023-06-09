@@ -184,6 +184,40 @@ void DeltaStepParallel::find_bucket_requests(std::vector<std::vector<Edge>>* lig
 		++begin;
 	}
 }
+void DeltaStepParallel::find_bucket_requests_seq(const std::set<int>& bucket, std::vector<std::vector<Edge>>* light_requests, std::vector<std::vector<Edge>>* heavy_requests)
+{
+	for (const int vertex_id : bucket)
+	{
+		buckets_[bucket_counter_].erase(vertex_id);
+		if (is_verbose_)
+		{
+			std::cout << "Erased " << vertex_id << " from bucket " << bucket_counter_ << std::endl;
+			this->print_bucket(bucket_counter_);
+		}
+
+		// Add light requests
+		for (const int l_edge_vertex_id : light_edges_[vertex_id])
+		{
+			light_requests->at(vertex_id).emplace_back(
+				vertex_id,
+				l_edge_vertex_id,
+				graph_.getEdgeWeight(vertex_id, l_edge_vertex_id)
+			);
+
+		}
+
+		// Add heavy requests
+		for (const int h_edge_vertex_id : heavy_edges_[vertex_id])
+		{
+
+			heavy_requests->at(vertex_id).emplace_back(
+				vertex_id,
+				h_edge_vertex_id,
+				graph_.getEdgeWeight(vertex_id, h_edge_vertex_id)
+			);
+		}
+	}
+}
 
 void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, const size_t begin, const size_t end)
 {
@@ -211,44 +245,10 @@ void DeltaStepParallel::solve()
 		{
 			// Make sure that the number of threads is not greater than the number of vertices in the current bucket
 			// to ensure that each thread will have at least one vertex to process
-			size_t req_threads;
-			if (thread_number_ > current_bucket.size())
-			{
-				req_threads = current_bucket.size();
-			}
-			else
-			{
-				req_threads = thread_number_;
-			}
-
-			// Find the bucket requests in parallel
-			std::vector<std::thread> find_request_workers(req_threads - 1);
-			const size_t bucket_chunk_size = current_bucket.size() / req_threads;
-
-			auto start_block = current_bucket.begin();
-
-			for (size_t i = 0; i < req_threads - 1; i++)
-			{
-				auto end = start_block;
-				std::advance(end, bucket_chunk_size);
-				find_request_workers[i] = std::thread(
-					&DeltaStepParallel::find_bucket_requests,
-					this,
-					&light_requests,
-					&heavy_requests,
-					start_block,
-					end,
-					std::ref(nb_light_requests),
-					std::ref(nb_heavy_requests)
-				);
-				start_block = end;
-			}
-			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end(), std::ref(nb_light_requests), std::ref(nb_heavy_requests));
-			for (auto& worker : find_request_workers)
-			{
-				worker.join();
-			}
-
+			// 
+			find_bucket_requests_seq(current_bucket, &light_requests, &heavy_requests);
+			nb_light_requests += light_requests.size();
+			nb_heavy_requests += heavy_requests.size();
 			// Resolve the light requests in parallel
 			if(nb_light_requests > 0)
 			{
@@ -288,8 +288,9 @@ void DeltaStepParallel::solve()
 						}
 						light_requests[i].clear();
 					}
+					
 				}
-
+				nb_light_requests = 0;
 			}
 			
 			current_bucket = buckets_[bucket_counter_];
@@ -334,6 +335,7 @@ void DeltaStepParallel::solve()
 					heavy_requests[i].clear();
 				}
 			}
+			nb_heavy_requests = 0;
 
 		}
 		bucket_counter_++;

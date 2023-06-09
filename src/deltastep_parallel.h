@@ -29,6 +29,7 @@ private:
 		const std::set<int>::const_iterator& end,
 		int &nb_light_requests, int &nb_heavy_requests
 	);
+	void find_bucket_requests_seq(const std::set<int>& bucket, std::vector<std::vector<Edge>>* light_requests, std::vector<std::vector<Edge>>* heavy_requests);
 	void resolve_requests(
 		const std::vector<Edge>* requests,
 		const size_t begin,

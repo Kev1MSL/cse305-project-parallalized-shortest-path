@@ -260,7 +260,7 @@ void DeltaStepSequential::solve_light_heavy() {
 
 		bucket_counter_++;
 
-		while (bucket_counter_ < graph_.getGraphNbVertices() && buckets_[bucket_counter_].empty()) {
+		while (bucket_counter_ < buckets_.size() && buckets_[bucket_counter_].empty() == true) {
 			bucket_counter_++;
 		}
 	}
