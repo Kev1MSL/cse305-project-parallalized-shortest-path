@@ -26,6 +26,8 @@ make
 
 3. Run the executables:
 
+*Disclaimer: Even if we ask for a target_vertex, both sequential and parallel version computes the distances to all vertices. This could of course be fixed, but we wanted to check that our implementation is correct and thread sage (no race conditions, segfaults, etc.)*
+
 **graph_gen:** Generates a graph.
 
 ```
