@@ -23,17 +23,18 @@ private:
 
 	// BUG: This function does not seems to be thread safe, getting violation reading location, seems to be a problem with when emplacing into the vector
 	void find_bucket_requests(
-		std::vector<std::vector<Edge>>* light_requests,
-		std::vector<std::vector<Edge>>* heavy_requests,
+		std::vector<Edge>* light_requests,
+		std::vector<Edge>* heavy_requests,
 		std::set<int>::const_iterator begin, 
 		const std::set<int>::const_iterator& end,
 		int &nb_light_requests, int &nb_heavy_requests
 	);
-	void find_bucket_requests_seq(const std::set<int>& bucket, std::vector<std::vector<Edge>>* light_requests, std::vector<std::vector<Edge>>* heavy_requests);
+	// void find_bucket_requests_seq(const std::set<int>& bucket, std::vector<std::vector<Edge>>* light_requests, std::vector<std::vector<Edge>>* heavy_requests);
 	void resolve_requests(
 		const std::vector<Edge>* requests,
-		const size_t begin,
-		const size_t end
+		std::mutex &mutex,
+		int begin, 
+		int end
 	);
 
 
