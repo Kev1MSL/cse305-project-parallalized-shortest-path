@@ -28,9 +28,29 @@ make
 
 **graph_gen:** Generates a graph.
 
+```
+./graph_gen <number of vertices> <number of edges> <number of graphs> <filename>
+```
+
 **seq_shortest_path:** Performs shortest path computation using the sequential algorithm.
 
+```
+./seq_shortest_path <graph_filename> <from_vertex> <to_vertex>
+```
+
 **parallel_shortest_path:** Performs shortest path computation using the parallel algorithm.
+
+```
+./parallel_shortest_path <graph_filename> <from_vertex> <to_vertex> <threads_desired>
+```
+
+4. Example
+Usage
+
+```
+./parallel_shortest_path graph.txt 0 2 8
+```
+
 
 ## Project Structure
 
