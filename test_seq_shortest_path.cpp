@@ -7,6 +7,7 @@
 #include "src/graph_gen.h"
 #include "src/deltastep_seq.h"
 #include "src/seq_shortest_path.h"
+#include <cstring>
 
 
 int main(const int argc, char* argv[]) {
