@@ -1,7 +1,6 @@
 #include "graph.h"
 
 
-
 int Edge::get_from() const
 {
 	return from_vertex_;
@@ -147,10 +146,13 @@ double Graph::getEdgeWeight(const int from, const int to) const
 {
 	if (adjList.contains(from))
 	{
-		const auto it = std::ranges::find_if(adjList.at(from), [to](const std::pair<int, double>& p) {return p.first == to; });
-		if (it != adjList.at(from).end())
+		//return edge weight
+		for (const std::pair<int, double>& p : adjList.at(from))
 		{
-			return it->second;
+			if (p.first == to)
+			{
+				return p.second;
+			}
 		}
 	}
 	return 0.;
@@ -224,12 +226,12 @@ void Graph::print_graph_info() const
 {
 	std::cout << "Graph " << nbVertices << ", Vertices " << nbVertices << ", Edges " << nbEdges << std::endl;
 	std::cout << "Max degree: " << maxDegree << std::endl;
-	std::cout << "Degrees: ";
-	for (int i = 0; i < nbVertices; i++)
-	{
-		std::cout << degrees[i] << " ";
-	}
-	std::cout << std::endl;
+	//std::cout << "Degrees: ";
+	//for (int i = 0; i < nbVertices; i++)
+	//{
+	//	std::cout << degrees[i] << " ";
+	//}
+	//std::cout << std::endl;
 	/*std::cout << "Adjacency Matrix:" << std::endl;
 	for (int i = 0; i < nbVertices; i++)
 	{

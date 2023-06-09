@@ -30,6 +30,8 @@ DeltaStepParallel::DeltaStepParallel(const Graph& graph, const int source, const
 		if (i != source_)
 			buckets_[bucket_size - 1].insert(i);
 	}
+
+	
 	// Set the initial bucket
 	buckets_[0].insert(source_);
 	dist_[source_] = 0;
@@ -65,24 +67,33 @@ void DeltaStepParallel::relax(Edge selected_edge)
 	const double edge_weight = selected_edge.get_weight();
 
 	// Lock for relax bucket, because the buckets_ list might be modified (especially the size) and dist_[to_vertex] might be tempered with
-	std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
+	// std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
+	source_vertex_mutexes_[to_vertex].lock();
+	source_vertex_mutexes_[from_vertex].lock();
 	const double tentative_dist = dist_[from_vertex] + edge_weight;
 	if (tentative_dist < dist_[to_vertex]) {
 
 		const int i = static_cast<int> (std::floor(dist_[to_vertex] / delta_));
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
-
+		dist_[to_vertex] = tentative_dist;
+		pred_[to_vertex] = from_vertex;
+		source_vertex_mutexes_[from_vertex].unlock();
+		source_vertex_mutexes_[to_vertex].unlock();
 		if (i < buckets_.size() && i >= 0)
 		{
+			std::lock_guard<std::mutex> lock(bucket_mutexes_[i]);
 			buckets_[i].erase(to_vertex);
 		}
 		if (j < buckets_.size() && j >= 0)
 		{
+			std::lock_guard<std::mutex> lock(bucket_mutexes_[j]);
 			buckets_[j].insert(to_vertex);
 		}
 
-		dist_[to_vertex] = tentative_dist;
-		pred_[to_vertex] = from_vertex;
+		
+	}else{
+		source_vertex_mutexes_[from_vertex].unlock();
+		source_vertex_mutexes_[to_vertex].unlock();
 	}
 }
 
@@ -133,6 +144,7 @@ void DeltaStepParallel::print_bucket(const size_t bucket_id) const
 void DeltaStepParallel::find_bucket_requests(std::vector<Edge>* light_requests,
 	std::vector<Edge>* heavy_requests, std::set<int>::const_iterator begin, const std::set<int>::const_iterator& end)
 {
+	std::vector<Edge> local_light_requests, local_heavy_requests;
 	while (begin != end)
 	{
 		// Erase the vertex from the bucket in a thread-safe manner, because erase() changes the size of the set, otherwise create segfaults
@@ -149,28 +161,34 @@ void DeltaStepParallel::find_bucket_requests(std::vector<Edge>* light_requests,
 		// Add light requests
 		for (const int l_edge_vertex_id : light_edges_[*begin])
 		{
-			light_request_mutex_.lock();
-			light_requests->emplace_back(
+			//light_request_mutex_.lock();
+			
+			local_light_requests.emplace_back(
 				*begin,
 				l_edge_vertex_id,
 				graph_.getEdgeWeight(*begin, l_edge_vertex_id)
 			);
-			light_request_mutex_.unlock();
+			//light_request_mutex_.unlock();
 		}
 
 		// Add heavy requests
 		for (const int h_edge_vertex_id : heavy_edges_[*begin])
 		{
-			heavy_request_mutex_.lock();
-			heavy_requests->emplace_back(
+			//heavy_request_mutex_.lock();
+			local_heavy_requests.emplace_back(
 				*begin,
 				h_edge_vertex_id,
 				graph_.getEdgeWeight(*begin, h_edge_vertex_id)
 			);
-			heavy_request_mutex_.unlock();
+			//heavy_request_mutex_.unlock();
 		}
 		++begin;
 	}
+
+	// Add the local requests to the global requests
+	std::lock_guard<std::mutex> lock(light_request_mutex_);
+	light_requests->insert(light_requests->end(), local_light_requests.begin(), local_light_requests.end());
+	heavy_requests->insert(heavy_requests->end(), local_heavy_requests.begin(), local_heavy_requests.end());
 }
 
 void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, const size_t begin, const size_t end)
@@ -185,12 +203,17 @@ void DeltaStepParallel::resolve_requests(const std::vector<Edge>* requests, cons
 
 void DeltaStepParallel::solve()
 {
+	bucket_mutexes_ = std::vector<std::mutex>(buckets_.size());
+	source_vertex_mutexes_ = std::vector<std::mutex>(graph_.getGraphNbVertices());
 	while (bucket_counter_ < buckets_.size())
 	{
 		std::vector<Edge> light_requests, heavy_requests;
 		std::set<int> current_bucket = buckets_[bucket_counter_];
 		while (!current_bucket.empty())
 		{
+
+			
+
 			// Make sure that the number of threads is not greater than the number of vertices in the current bucket
 			// to ensure that each thread will have at least one vertex to process
 			size_t req_threads;
@@ -209,6 +232,8 @@ void DeltaStepParallel::solve()
 
 			auto start_block = current_bucket.begin();
 
+			
+
 			for (size_t i = 0; i < req_threads - 1; i++)
 			{
 				auto end = start_block;
@@ -221,14 +246,17 @@ void DeltaStepParallel::solve()
 					start_block,
 					end
 				);
+					
 				start_block = end;
 			}
+			//this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end());
 			this->find_bucket_requests(&light_requests, &heavy_requests, start_block, current_bucket.end());
 			for (auto& worker : find_request_workers)
 			{
 				worker.join();
 			}
 
+			
 			// Resolve the light requests in parallel
 			if (!light_requests.empty())
 			{

@@ -54,6 +54,8 @@ private:
 	int thread_number_;
 	std::mutex light_request_mutex_;
 	std::mutex heavy_request_mutex_;
+	std::vector<std::mutex> bucket_mutexes_;
+	std::vector<std::mutex> source_vertex_mutexes_;
 	std::mutex relax_bucket_mutex_;
 	std::mutex erase_bucket_mutex_;
 };
