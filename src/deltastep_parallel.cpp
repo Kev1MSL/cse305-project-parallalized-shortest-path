@@ -68,8 +68,10 @@ void DeltaStepParallel::relax(Edge selected_edge)
 
 	// Lock for relax bucket, because the buckets_ list might be modified (especially the size) and dist_[to_vertex] might be tempered with
 	// std::lock_guard<std::mutex> lock(relax_bucket_mutex_);
-	source_vertex_mutexes_[to_vertex].lock();
-	source_vertex_mutexes_[from_vertex].lock();
+	int first_vertex = std::min(from_vertex, to_vertex);
+	int second_vertex = std::max(from_vertex, to_vertex);
+	source_vertex_mutexes_[first_vertex].lock();
+	source_vertex_mutexes_[second_vertex].lock();
 	const double tentative_dist = dist_[from_vertex] + edge_weight;
 	if (tentative_dist < dist_[to_vertex]) {
 
@@ -77,8 +79,8 @@ void DeltaStepParallel::relax(Edge selected_edge)
 		const int j = static_cast<int> (std::floor(tentative_dist / delta_));
 		dist_[to_vertex] = tentative_dist;
 		pred_[to_vertex] = from_vertex;
-		source_vertex_mutexes_[from_vertex].unlock();
-		source_vertex_mutexes_[to_vertex].unlock();
+		source_vertex_mutexes_[first_vertex].unlock();
+		source_vertex_mutexes_[second_vertex].unlock();
 		if (i < buckets_.size() && i >= 0)
 		{
 			std::lock_guard<std::mutex> lock(bucket_mutexes_[i]);
@@ -92,8 +94,8 @@ void DeltaStepParallel::relax(Edge selected_edge)
 
 		
 	}else{
-		source_vertex_mutexes_[from_vertex].unlock();
-		source_vertex_mutexes_[to_vertex].unlock();
+		source_vertex_mutexes_[first_vertex].unlock();
+		source_vertex_mutexes_[second_vertex].unlock();
 	}
 }
 
